@@ -23,6 +23,6 @@ The file explorer is accessible using the button in left corner of the navigatio
 
 All your files and folders are presented as a tree in the file explorer. You can switch from one to another by clicking a file in the tree.
 
-##Rename a file
+## Rename a file
 
 You can rename the current file by clicking the file name in the navigation bar or by clicking the **Rename** button in the file explorer.
