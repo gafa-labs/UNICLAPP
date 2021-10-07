@@ -6,7 +6,7 @@ This project will provide **a great experience** for both students and board mem
 
 ## How to provide a great experience?
 
- - [**Sign Up & Sign In**](##-Rename-a-file)
+ - [**Sign Up & Sign In**](## Rename-a-file)
  - **Organizing Club Events**
  - **Event Tracker & Sync Event Calendar**
  - **Upcoming Events**
