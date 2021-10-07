@@ -14,31 +14,35 @@ This project will provide **a great experience** for both students and board mem
  - [**Messaging**](#messaging)
  - [**Following**](#following)
  - [**Campus Map**](#campus-map)
+ - [**Rating Events**](#rating-events)
 
 
-## Sign Up & Sign In
+### Sign Up & Sign In
 
 
-## Organizing Club Events
+### Organizing Club Events
 
 
-## Event Tracker & Sync Event Calendar
+### Event Tracker & Sync Event Calendar
 
 
-## Upcoming Events
+### Upcoming Events
 
 
-## Profile Page
+### Profile Page
 
 
-## Notification
+### Notification
 
 
-## Messaging
+### Messaging
 
 
-## Following
+### Following
 
 
-## Campus Map
+### Campus Map
+
+
+### Rating Events
 
