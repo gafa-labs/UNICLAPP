@@ -10,7 +10,6 @@ This project will provide **a great experience** for both students and board mem
  - [**Event Tracker & Sync Event Calendar**](#event-tracker--sync-event-calendar)
  - [**Upcoming Events**](#upcoming-events)
  - [**Profile Page**](#profile-page)
- - [**Notification**](#notification)
  - [**Following**](#following)
  - [**Campus Map**](#campus-map)
 
@@ -29,12 +28,8 @@ Thanks to the upcoming events page, students will be able to see the events adde
 
 ### Profile Page
 
-
-### Notification
-
-
 ### Following
-
+Students will be able to examine the all students clubs that are the member of the application. They can check and see the activities, events and the aim of the student clubs by examininig the student clubs pages. The students can follow the student clubs that they want to be a part of and participate in their activities and events. Once a student club is followed, the students can see the upcoming events of the followed club. By this way, students can easily manage their calendars and participate in the activity to be carried out by the student club followed.
 
 ### Campus Map
 
