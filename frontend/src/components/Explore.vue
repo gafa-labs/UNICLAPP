@@ -1,12 +1,13 @@
 <template>
   <v-container class="pa-16">
-    <v-text-field v-model="search" label="Search" class="mx-4"></v-text-field>
-    <v-row class="mx-4">
+    <v-row class="display-1 mb-6">Explore</v-row>
+    <v-text-field v-model="search" label="Search"></v-text-field>
+    <v-row>
       <v-col cols="12" md="2">
-        <v-col cols="12" md="6">
+        <v-col cols="12" md="12" v-if="!selectedAll">
           <v-btn @click="selectAll">Select All</v-btn>
         </v-col>
-        <v-col cols="12" md="6">
+        <v-col cols="12" md="12" v-if="selectedAll">
           <v-btn @click="deselectAll">Deselect All</v-btn>
         </v-col>
       </v-col>
@@ -57,11 +58,11 @@
   </v-container>
 </template>
 <script>
-import Navbar from "../components/Navbar";
 
 export default {
   data() {
     return {
+      selectedAll : true,
       categories: [
         "Business",
         "Software",
@@ -183,6 +184,7 @@ export default {
   },
   methods: {
     selectAll() {
+      this.selectedAll = true;
       this.categories.forEach(category => {
         if (!this.selected.includes(category)) {
           this.selected.push(category);
@@ -190,11 +192,9 @@ export default {
       });
     },
     deselectAll() {
+      this.selectedAll = false;
       this.selected = [];
     }
-  },
-  components: {
-    navBar: Navbar
   }
 };
 </script>
