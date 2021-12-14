@@ -1,13 +1,13 @@
 <template>
   <v-container class="pa-16">
     <v-row class="display-1 mb-6">Explore</v-row>
-    <v-text-field v-model="search" label="Search"></v-text-field>
+    <v-text-field v-model="search" label="Search" filled rounded dense></v-text-field>
     <v-row class="align-center mb-2">
       <v-col cols="12" md="2" v-if="!selectedAll">
         <v-btn @click="selectAll">Select All</v-btn>
       </v-col>
       <v-col cols="12" md="2" v-if="selectedAll">
-        <v-btn @click="deselectAll">Deselect All</v-btn>
+        <v-btn @click="unselectAll">Unselect All</v-btn>
       </v-col>
       <v-col cols="12" md="2">
         <v-checkbox
@@ -188,7 +188,7 @@ export default {
         }
       });
     },
-    deselectAll() {
+    unselectAll() {
       this.selectedAll = false;
       this.selected = [];
     },
