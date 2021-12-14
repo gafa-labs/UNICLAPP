@@ -175,8 +175,7 @@ export default {
         if (this.followingClubs[i] === item) { 
             this.followingClubs.splice(i, 1); 
         }
-    
-    }
+      }
     }
   },
 };
