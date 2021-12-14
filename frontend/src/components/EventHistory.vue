@@ -1,16 +1,12 @@
 <template>
-  <div>
-    <v-container fluid>
-      <h1>This is a event history page</h1>
-    </v-container>
-  </div>
+  <v-container class="pa-16">
+    <v-row class="display-1 mb-6">Event History</v-row>
+
+  </v-container>
 </template>
 <script>
-import Navbar from "../components/Navbar";
 
 export default {
-  components: {
-    navBar: Navbar
-  }
+
 };
 </script>

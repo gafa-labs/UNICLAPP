@@ -1,16 +1,11 @@
 <template>
-  <div>
-    <v-container fluid>
-      <h1>This is a profile page</h1>
-    </v-container>
-  </div>
-</template>
-<script>
-import Navbar from "../components/Navbar";
+  <v-container class="pa-16">
+    <v-row class="display-1 mb-6">Profile</v-row>
 
+  </v-container>
+</template>
+
+<script>
 export default {
-  components: {
-    navBar: Navbar
-  }
 };
 </script>
