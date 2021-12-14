@@ -2,14 +2,12 @@
   <v-container class="pa-16">
     <v-row class="display-1 mb-6">Explore</v-row>
     <v-text-field v-model="search" label="Search"></v-text-field>
-    <v-row>
-      <v-col cols="12" md="2">
-        <v-col cols="12" md="12" v-if="!selectedAll">
-          <v-btn @click="selectAll">Select All</v-btn>
-        </v-col>
-        <v-col cols="12" md="12" v-if="selectedAll">
-          <v-btn @click="deselectAll">Deselect All</v-btn>
-        </v-col>
+    <v-row class="align-center mb-2">
+      <v-col cols="12" md="2" v-if="!selectedAll">
+        <v-btn @click="selectAll">Select All</v-btn>
+      </v-col>
+      <v-col cols="12" md="2" v-if="selectedAll">
+        <v-btn @click="deselectAll">Deselect All</v-btn>
       </v-col>
       <v-col cols="12" md="2">
         <v-checkbox
@@ -58,17 +56,16 @@
   </v-container>
 </template>
 <script>
-
 export default {
   data() {
     return {
-      selectedAll : true,
+      selectedAll: true,
       categories: [
         "Business",
         "Software",
         "Science",
         "Hobbies",
-        "Entertainment"
+        "Entertainment",
       ],
       selected: ["Business", "Software", "Science", "Hobbies", "Entertainment"],
       search: "",
@@ -78,51 +75,51 @@ export default {
           category: ["Business,Software,Science"],
           followers: "1545",
           rate: "4.5",
-          status: "Unfollow"
+          status: "Unfollow",
         },
         {
           name: "Management and Economics Society",
           category: ["Business"],
           followers: "6889",
           rate: "4.6",
-          status: "Follow"
+          status: "Follow",
         },
         {
           name: "Astronomy Society",
           category: ["Science,Hobbies"],
           followers: "1276",
           rate: "4.7",
-          status: "Follow"
+          status: "Follow",
         },
         {
           name: "Young Entrepreneur Society",
           category: ["Entertainment,Business"],
           followers: "5642",
           rate: "4.5",
-          status: "Unfollow"
+          status: "Unfollow",
         },
         {
           name: "E-Sport Society",
           category: ["Entertainment,Hobbies"],
           followers: "2036",
           rate: "4.2",
-          status: "Follow"
+          status: "Follow",
         },
         {
           name: "Science Fiction and Fantasy Society",
           category: ["Entertainment,Hobbies"],
           followers: "891",
           rate: "4.3",
-          status: "Follow"
+          status: "Follow",
         },
         {
           name: "Operational Research Club",
           category: ["Business"],
           followers: "1149",
           rate: "4.0",
-          status: "Unfollow"
-        }
-      ]
+          status: "Unfollow",
+        },
+      ],
     };
   },
   computed: {
@@ -132,38 +129,38 @@ export default {
           text: "Name",
           align: "start",
           sortable: false,
-          value: "name"
+          value: "name",
         },
         {
           text: "Category",
           value: "category",
-          filter: value => {
+          filter: (value) => {
             var arr = value[0].split(",");
             var check = false;
             console.log(arr);
-            this.selected.forEach(item => {
+            this.selected.forEach((item) => {
               if (arr.includes(item)) {
                 check = true;
               }
             });
             return check;
-          }
+          },
         },
         {
           text: "Followers",
-          value: "followers"
+          value: "followers",
         },
         {
           text: "Rate",
-          value: "rate"
+          value: "rate",
         },
         {
           text: "Following",
           sortable: false,
-          value: "status"
-        }
+          value: "status",
+        },
       ];
-    }
+    },
     // selectAll: {
     //   get: function() {
     //     // return this.categories
@@ -185,7 +182,7 @@ export default {
   methods: {
     selectAll() {
       this.selectedAll = true;
-      this.categories.forEach(category => {
+      this.categories.forEach((category) => {
         if (!this.selected.includes(category)) {
           this.selected.push(category);
         }
@@ -194,7 +191,7 @@ export default {
     deselectAll() {
       this.selectedAll = false;
       this.selected = [];
-    }
-  }
+    },
+  },
 };
 </script>
