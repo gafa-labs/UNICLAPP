@@ -1,7 +1,13 @@
 <template>
   <v-container class="pa-16">
     <v-row class="display-1 mb-6">Explore</v-row>
-    <v-text-field v-model="search" label="Search" filled rounded dense></v-text-field>
+    <v-text-field
+      v-model="search"
+      label="Search"
+      filled
+      rounded
+      dense
+    ></v-text-field>
     <v-row class="align-center mb-2">
       <v-col cols="12" md="2" v-if="!selectedAll">
         <v-btn @click="selectAll">Select All</v-btn>
@@ -52,6 +58,24 @@
       item-key="name"
       :search="search"
     >
+      <template v-slot:item.status="{ item }">
+        <v-btn
+          color="green lighten-1"
+          rounded
+          small
+          v-if="item.status === 'unfollowing'"
+          @click="follow(item)"
+          >Follow</v-btn
+        >
+        <v-btn
+          color="red lighten-1"
+          rounded
+          small
+          v-if="item.status === 'following'"
+          @click="unfollow(item)"
+          >Unfollow</v-btn
+        >
+      </template>
     </v-data-table>
   </v-container>
 </template>
@@ -75,49 +99,49 @@ export default {
           category: ["Business,Software,Science"],
           followers: "1545",
           rate: "4.5",
-          status: "Unfollow",
+          status: "unfollowing",
         },
         {
           name: "Management and Economics Society",
           category: ["Business"],
           followers: "6889",
           rate: "4.6",
-          status: "Follow",
+          status: "following",
         },
         {
           name: "Astronomy Society",
           category: ["Science,Hobbies"],
           followers: "1276",
           rate: "4.7",
-          status: "Follow",
+          status: "following",
         },
         {
           name: "Young Entrepreneur Society",
           category: ["Entertainment,Business"],
           followers: "5642",
           rate: "4.5",
-          status: "Unfollow",
+          status: "unfollowing",
         },
         {
           name: "E-Sport Society",
           category: ["Entertainment,Hobbies"],
           followers: "2036",
           rate: "4.2",
-          status: "Follow",
+          status: "following",
         },
         {
           name: "Science Fiction and Fantasy Society",
           category: ["Entertainment,Hobbies"],
           followers: "891",
           rate: "4.3",
-          status: "Follow",
+          status: "following",
         },
         {
           name: "Operational Research Club",
           category: ["Business"],
           followers: "1149",
           rate: "4.0",
-          status: "Unfollow",
+          status: "unfollowing",
         },
       ],
     };
@@ -128,7 +152,6 @@ export default {
         {
           text: "Name",
           align: "start",
-          sortable: false,
           value: "name",
         },
         {
@@ -137,7 +160,6 @@ export default {
           filter: (value) => {
             var arr = value[0].split(",");
             var check = false;
-            console.log(arr);
             this.selected.forEach((item) => {
               if (arr.includes(item)) {
                 check = true;
@@ -157,27 +179,11 @@ export default {
         {
           text: "Following",
           sortable: false,
+          align: "center",
           value: "status",
         },
       ];
     },
-    // selectAll: {
-    //   get: function() {
-    //     // return this.categories
-    //     //   ? this.selected.length == this.categories.length
-    //     //   : false;
-    //     return true;
-    //   },
-    //   set: function(value) {
-    //     var selected = [];
-    //     if (value) {
-    //       this.categories.forEach(category => {
-    //         selected.push(category);
-    //       });
-    //     }
-    //     this.selected = selected;
-    //   }
-    // }
   },
   methods: {
     selectAll() {
@@ -191,6 +197,12 @@ export default {
     unselectAll() {
       this.selectedAll = false;
       this.selected = [];
+    },
+    follow(item) {
+      item.status = "following";
+    },
+    unfollow(item) {
+      item.status = "unfollowing";
     },
   },
 };
