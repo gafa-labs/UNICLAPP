@@ -89,7 +89,7 @@ export default {
         "Software",
         "Science",
         "Hobbies",
-        "Entertainment",
+        "Entertainment"
       ],
       selected: ["Business", "Software", "Science", "Hobbies", "Entertainment"],
       search: "",
@@ -99,51 +99,51 @@ export default {
           category: ["Business,Software,Science"],
           followers: "1545",
           rate: "4.5",
-          status: "unfollowing",
+          status: "unfollowing"
         },
         {
           name: "Management and Economics Society",
           category: ["Business"],
           followers: "6889",
           rate: "4.6",
-          status: "following",
+          status: "following"
         },
         {
           name: "Astronomy Society",
           category: ["Science,Hobbies"],
           followers: "1276",
           rate: "4.7",
-          status: "following",
+          status: "following"
         },
         {
           name: "Young Entrepreneur Society",
           category: ["Entertainment,Business"],
           followers: "5642",
           rate: "4.5",
-          status: "unfollowing",
+          status: "unfollowing"
         },
         {
           name: "E-Sport Society",
           category: ["Entertainment,Hobbies"],
           followers: "2036",
           rate: "4.2",
-          status: "following",
+          status: "following"
         },
         {
           name: "Science Fiction and Fantasy Society",
           category: ["Entertainment,Hobbies"],
           followers: "891",
           rate: "4.3",
-          status: "following",
+          status: "following"
         },
         {
           name: "Operational Research Club",
           category: ["Business"],
           followers: "1149",
           rate: "4.0",
-          status: "unfollowing",
-        },
-      ],
+          status: "unfollowing"
+        }
+      ]
     };
   },
   computed: {
@@ -152,43 +152,43 @@ export default {
         {
           text: "Name",
           align: "start",
-          value: "name",
+          value: "name"
         },
         {
           text: "Category",
           value: "category",
-          filter: (value) => {
+          filter: value => {
             var arr = value[0].split(",");
             var check = false;
-            this.selected.forEach((item) => {
+            this.selected.forEach(item => {
               if (arr.includes(item)) {
                 check = true;
               }
             });
             return check;
-          },
+          }
         },
         {
           text: "Followers",
-          value: "followers",
+          value: "followers"
         },
         {
           text: "Rate",
-          value: "rate",
+          value: "rate"
         },
         {
           text: "Following",
           sortable: false,
           align: "center",
-          value: "status",
-        },
+          value: "status"
+        }
       ];
-    },
+    }
   },
   methods: {
     selectAll() {
       this.selectedAll = true;
-      this.categories.forEach((category) => {
+      this.categories.forEach(category => {
         if (!this.selected.includes(category)) {
           this.selected.push(category);
         }
@@ -203,7 +203,7 @@ export default {
     },
     unfollow(item) {
       item.status = "unfollowing";
-    },
-  },
+    }
+  }
 };
 </script>
