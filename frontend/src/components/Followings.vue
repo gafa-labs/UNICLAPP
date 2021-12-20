@@ -81,7 +81,7 @@ export default {
         "Software",
         "Science",
         "Hobbies",
-        "Entertainment",
+        "Entertainment"
       ],
       selected: ["Business", "Software", "Science", "Hobbies", "Entertainment"],
       search: "",
@@ -91,30 +91,30 @@ export default {
           category: ["Business"],
           followers: "6889",
           rate: "4.6",
-          status: "following",
+          status: "following"
         },
         {
           name: "Astronomy Society",
           category: ["Science,Hobbies"],
           followers: "1276",
           rate: "4.7",
-          status: "following",
+          status: "following"
         },
         {
           name: "E-Sport Society",
           category: ["Entertainment,Hobbies"],
           followers: "2036",
           rate: "4.2",
-          status: "following",
+          status: "following"
         },
         {
           name: "Science Fiction and Fantasy Society",
           category: ["Entertainment,Hobbies"],
           followers: "891",
           rate: "4.3",
-          status: "following",
+          status: "following"
         }
-      ],
+      ]
     };
   },
   computed: {
@@ -123,43 +123,42 @@ export default {
         {
           text: "Name",
           align: "start",
-          value: "name",
+          value: "name"
         },
         {
           text: "Category",
           value: "category",
-          filter: (value) => {
+          filter: value => {
             var arr = value[0].split(",");
             var check = false;
-            console.log(arr);
-            this.selected.forEach((item) => {
+            this.selected.forEach(item => {
               if (arr.includes(item)) {
                 check = true;
               }
             });
             return check;
-          },
+          }
         },
         {
           text: "Followers",
-          value: "followers",
+          value: "followers"
         },
         {
           text: "Rate",
-          value: "rate",
+          value: "rate"
         },
         {
           text: "Following",
           sortable: false,
-          value: "status",
-        },
+          value: "status"
+        }
       ];
-    },
+    }
   },
   methods: {
     selectAll() {
       this.selectedAll = true;
-      this.categories.forEach((category) => {
+      this.categories.forEach(category => {
         if (!this.selected.includes(category)) {
           this.selected.push(category);
         }
@@ -171,12 +170,12 @@ export default {
     },
     unfollow(item) {
       item.status = "unfollowing";
-      for(var i = 0; i < this.followingClubs.length; i++){ 
-        if (this.followingClubs[i] === item) { 
-            this.followingClubs.splice(i, 1); 
+      for (var i = 0; i < this.followingClubs.length; i++) {
+        if (this.followingClubs[i] === item) {
+          this.followingClubs.splice(i, 1);
         }
       }
     }
-  },
+  }
 };
 </script>
