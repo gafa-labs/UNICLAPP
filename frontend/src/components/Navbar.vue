@@ -17,7 +17,7 @@
           </v-list-item-content>
         </v-list-item>
 
-        <hr />
+        <v-divider></v-divider>
 
         <div v-if="this.userStatus == 'ClubAdvisor'">
           <router-link
@@ -58,6 +58,8 @@
             </v-list-item-content>
           </router-link>
         </div>
+
+        <v-divider></v-divider>
 
         <div v-if="this.userStatus == 'BoardMember'">
           <router-link
@@ -102,7 +104,7 @@
 export default {
   data() {
     return {
-      userStatus: "BoardMember",
+      userStatus: "ClubAdvisor",
       studentListItems: [
         { title: "Profile", icon: "mdi-account", path: "/profile" },
         { title: "Explore", icon: "mdi-magnify", path: "/explore" },
