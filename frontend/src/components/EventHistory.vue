@@ -80,7 +80,7 @@
                 width="250"
                 height="250"
                 v-model="search"
-                v-for="event in searched(allClubsEvents)"
+                v-for="event in searched(followingClubsEvents)"
                 :key="event.name"
                 flat
               >
@@ -132,47 +132,46 @@ export default {
     return {
       search: "",
       isClicked: false,
-      rating: 0,
       followingClubsEvents: [
         {
           club: "Management and Economics Society",
           name: "Event1",
-          rate: 4.3,
+          rate: 0,
           avgRate: 0,
           isRated: false
         },
         {
           club: "Science Fiction and Fantasy Society",
           name: "Event2",
-          rate: 4.3,
+          rate: 0,
           avgRate: 0,
           isRated: false
         },
         {
           club: "E-Sport Society",
           name: "Event3",
-          rate: 4.3,
+          rate: 0,
           avgRate: 0,
           isRated: false
         },
         {
           club: "Astronomy Society",
           name: "Event4",
-          rate: 4.3,
+          rate: 0,
           avgRate: 0,
           isRated: false
         },
         {
           club: "Management and Economics Society",
           name: "Event5",
-          rate: 4.3,
+          rate: 0,
           avgRate: 0,
           isRated: false
         },
         {
           club: "Science Fiction and Fantasy Society",
           name: "Event6",
-          rate: 4.3,
+          rate: 0,
           avgRate: 0,
           isRated: false
         }
@@ -181,34 +180,34 @@ export default {
         {
           club: "ACM Bilkent Club",
           name: "event7",
-          rate: 4.3,
+          rate: 0,
           avgRate: 0,
           isRated: false
         },
         {
           club: "ACM Bilkent Club",
           name: "event8",
-          rate: 4.3,
+          rate: 0,
           avgRate: 0,
           isRated: false
         },
         {
           club: "ACM Bilkent Club",
           name: "event9",
-          rate: 4.3,
+          rate: 0,
           avgRate: 0,
           isRated: false
         },
         {
           club: "ACM Bilkent Club",
           name: "event10",
-          rate: 4.3,
+          rate: 0,
           isRated: false
         },
         {
           club: "ACM Bilkent Club",
           name: "event11",
-          rate: 4.3,
+          rate: 0,
           avgRate: 0,
           isRated: false
         }
