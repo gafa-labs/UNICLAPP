@@ -213,7 +213,7 @@ export default {
         },
         {
           club: "ACM Bilkent Club",
-          event: "event5",
+          name: "event5",
           description: "description2",
           location: "location2",
           date: "date2"
@@ -283,7 +283,7 @@ export default {
         },
         {
           club: "ACM Bilkent Club",
-          event: "event15",
+          name: "event15",
           description: "description2",
           location: "location2",
           date: "date2"
