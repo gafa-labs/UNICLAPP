@@ -1,13 +1,19 @@
 <template>
   <v-container class="pa-16">
     <v-row class="display-1 mb-6">Upcoming Events</v-row>
+    <v-text-field
+      v-model="search"
+      label="Search"
+      filled
+      rounded
+      dense
+    ></v-text-field>
     <v-card>
       <v-tabs color="deep-blue accent-4" v-model="tab">
         <v-tabs-slider color="blue"></v-tabs-slider>
         <v-tab>All</v-tab>
         <v-tab>Followings</v-tab>
       </v-tabs>
-
       <v-tabs-items v-model="tab">
         <v-tab-item>
           <v-container fluid>
@@ -19,7 +25,8 @@
                 class="ma-5"
                 width="250"
                 height="250"
-                v-for="event in allClubsEvents"
+                v-model="search"
+                v-for="event in searched(allClubsEvents)"
                 :key="event.name"
                 flat
               >
@@ -76,7 +83,8 @@
                 class="ma-5"
                 width="250"
                 height="250"
-                v-for="event in followingClubsEvents"
+                v-model="search"
+                v-for="event in searched(followingClubsEvents)"
                 :key="event.name"
                 flat
               >
@@ -131,6 +139,7 @@
 export default {
   data() {
     return {
+      search: "",
       followingClubsEvents: [
         {
           club: "Management and Economics Society",
@@ -328,6 +337,15 @@ export default {
       sortElements: ["Followers", "Rate", "Events", "Participants"]
     };
   },
-  methods: {}
+  methods: {
+    searched(events) {
+      if (this.search === "") {
+        return events;
+      }
+      return events.filter(event => {
+        return event.name.toLowerCase().includes(this.search.toLowerCase());
+      });
+    }
+  }
 };
 </script>

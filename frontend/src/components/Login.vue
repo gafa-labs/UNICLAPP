@@ -43,6 +43,7 @@
                       @click="goToMainPage"
                       color="light-blue darken-3"
                       dark
+                      rounded
                       >SIGN IN</v-btn
                     >
                   </div>
@@ -62,7 +63,7 @@
                       rounded
                       text
                       @click="step++"
-                      x-large
+                      large
                     >
                       Sign Up
                     </v-btn>
@@ -135,7 +136,7 @@
                     </v-col>
                   </v-row>
                   <div class="text-center mb-10">
-                    <v-btn rounded color="light-blue accent-2" dark v-color:
+                    <v-btn rounded color="light-blue darken-3" dark
                       >SIGN UP</v-btn
                     >
                   </div>
@@ -155,7 +156,7 @@
                       rounded
                       text
                       @click="step--"
-                      x-large
+                      large
                     >
                       Sign In
                     </v-btn>
