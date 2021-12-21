@@ -4,10 +4,10 @@
     <v-text-field v-model="search" label="Search" filled rounded dense>
     </v-text-field>
     <v-row class="align-center mb-2">
-      <v-col cols="12" md="2">
+      <v-col cols="12" sm="1" class="pl-5">
         Sort by:
       </v-col>
-      <v-col cols="12" md="10">
+      <v-col cols="12" sm="11">
         <v-chip-group mandatory active-class="primary--text">
           <v-chip v-for="el in sortElements" :key="el" @click="sort(el)">{{
             el
