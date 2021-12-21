@@ -63,8 +63,18 @@
                   <v-col cols="6">
                     <v-btn
                       style="position: absolute; bottom:20px;"
+                      color="red lighten-1"
+                      text
+                      v-if="event.status === 'attending'"
+                      @click="event.status = 'not attending'"
+                      >Cancel</v-btn
+                    >
+                    <v-btn
+                      style="position: absolute; bottom:20px;"
                       color="green lighten-1"
                       text
+                      v-if="event.status === 'not attending'"
+                      @click="event.status = 'attending'"
                       >Attend</v-btn
                     >
                   </v-col>
@@ -121,8 +131,18 @@
                   <v-col cols="6">
                     <v-btn
                       style="position: absolute; bottom:20px;"
+                      color="red lighten-1"
+                      text
+                      v-if="event.status === 'attending'"
+                      @click="event.status = 'not attending'"
+                      >Cancel</v-btn
+                    >
+                    <v-btn
+                      style="position: absolute; bottom:20px;"
                       color="green lighten-1"
                       text
+                      v-if="event.status === 'not attending'"
+                      @click="event.status = 'attending'"
                       >Attend</v-btn
                     >
                   </v-col>
@@ -146,49 +166,56 @@ export default {
           name: "Event1",
           description: "description",
           location: "location",
-          date: "date"
+          date: "date",
+          status: "not attending"
         },
         {
           club: "Science Fiction and Fantasy Society",
           name: "Event2",
           description: "description",
           location: "location",
-          date: "date"
+          date: "date",
+          status: "not attending"
         },
         {
           club: "E-Sport Society",
           name: "Event3",
           description: "description",
           location: "location",
-          date: "date"
+          date: "date",
+          status: "not attending"
         },
         {
           club: "Astronomy Society",
           name: "Event4",
           description: "description",
           location: "location",
-          date: "date"
+          date: "date",
+          status: "not attending"
         },
         {
           club: "Management and Economics Society",
           name: "Event5",
           description: "description",
           location: "location",
-          date: "date"
+          date: "date",
+          status: "not attending"
         },
         {
           club: "Science Fiction and Fantasy Society",
           name: "Event6",
           description: "description",
           location: "location",
-          date: "date"
+          date: "date",
+          status: "attending"
         },
         {
           club: "Management and Economics Society",
           name: "Event7",
           description: "description",
           location: "location",
-          date: "date"
+          date: "date",
+          status: "attending"
         }
       ],
       allClubsEvents: [
@@ -197,140 +224,80 @@ export default {
           name: "event1",
           description: "description2",
           location: "location2",
-          date: "date2"
+          date: "date2",
+          status: "attending"
         },
         {
           club: "ACM Bilkent Club",
           name: "event2",
           description: "description2",
           location: "location2",
-          date: "date2"
+          date: "date2",
+          status: "not attending"
         },
         {
           club: "ACM Bilkent Club",
           name: "event3",
           description: "description2",
           location: "location2",
-          date: "date2"
+          date: "date2",
+          status: "attending"
         },
         {
           club: "ACM Bilkent Club",
           name: "event4",
           description: "description2",
           location: "location2",
-          date: "date2"
+          date: "date2",
+          status: "not attending"
         },
         {
           club: "ACM Bilkent Club",
           name: "event5",
           description: "description2",
           location: "location2",
-          date: "date2"
+          date: "date2",
+          status: "not attending"
         },
         {
           club: "ACM Bilkent Club",
           name: "event6",
           description: "description2",
           location: "location2",
-          date: "date2"
+          date: "date2",
+          status: "not attending"
         },
         {
           club: "ACM Bilkent Club",
           name: "event7",
           description: "description2",
           location: "location2",
-          date: "date2"
+          date: "date2",
+          status: "not attending"
         },
         {
           club: "ACM Bilkent Club",
           name: "event8",
           description: "description2",
           location: "location2",
-          date: "date2"
+          date: "date2",
+          status: "not attending"
         },
         {
           club: "ACM Bilkent Club",
           name: "event9",
           description: "description2",
           location: "location2",
-          date: "date2"
+          date: "date2",
+          status: "not attending"
         },
         {
           club: "ACM Bilkent Club",
           name: "event10",
           description: "description2",
           location: "location2",
-          date: "date2"
-        },
-        {
-          club: "ACM Bilkent Club",
-          name: "event11",
-          description: "description2",
-          location: "location2",
-          date: "date2"
-        },
-        {
-          club: "ACM Bilkent Club",
-          name: "event12",
-          description: "description2",
-          location: "location2",
-          date: "date2"
-        },
-        {
-          club: "ACM Bilkent Club",
-          name: "event13",
-          description: "description2",
-          location: "location2",
-          date: "date2"
-        },
-        {
-          club: "ACM Bilkent Club",
-          name: "event14",
-          description: "description2",
-          location: "location2",
-          date: "date2"
-        },
-        {
-          club: "ACM Bilkent Club",
-          name: "event15",
-          description: "description2",
-          location: "location2",
-          date: "date2"
-        },
-        {
-          club: "ACM Bilkent Club",
-          name: "event16",
-          description: "description2",
-          location: "location2",
-          date: "date2"
-        },
-        {
-          club: "ACM Bilkent Club",
-          name: "event17",
-          description: "description2",
-          location: "location2",
-          date: "date2"
-        },
-        {
-          club: "ACM Bilkent Club",
-          name: "event18",
-          description: "description2",
-          location: "location2",
-          date: "date2"
-        },
-        {
-          club: "ACM Bilkent Club",
-          name: "event19",
-          description: "description2",
-          location: "location2",
-          date: "date2"
-        },
-        {
-          club: "ACM Bilkent Club",
-          name: "event20",
-          description: "description2",
-          location: "location2",
-          date: "date2"
+          date: "date2",
+          status: "not attending"
         }
       ],
       tab: null,
