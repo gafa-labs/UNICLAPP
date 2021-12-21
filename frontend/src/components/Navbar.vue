@@ -17,30 +17,65 @@
           </v-list-item-content>
         </v-list-item>
 
-        <v-divider></v-divider>
+        <hr />
 
-        <router-link
-          v-for="item in items"
-          :key="item.title"
-          tag="v-list-item"
-          :to="item.path"
-          link
-        >
-          <v-list-item-icon>
-            <v-icon>{{ item.icon }}</v-icon>
-          </v-list-item-icon>
+        <div v-if="this.userStatus == 'ClubAdvisor'">
+          <router-link
+            v-for="item in clubAdvisorListItems"
+            :key="item.title"
+            tag="v-list-item"
+            :to="item.path"
+            link
+          >
+            <v-list-item-icon>
+              <v-icon>{{ item.icon }}</v-icon>
+            </v-list-item-icon>
 
-          <v-list-item-content>
-            <v-list-item-title>{{ item.title }}</v-list-item-title>
-          </v-list-item-content>
-        </router-link>
-        <!-- <v-list-item
-          v-for="item in items"
-          :key="item.title"
-          link
-          :to="item.path"
+            <v-list-item-content>
+              <v-list-item-title>{{ item.title }}</v-list-item-title>
+            </v-list-item-content>
+          </router-link>
+        </div>
+
+        <div
+          v-if="
+            this.userStatus == 'Student' || this.userStatus == 'BoardMember'
+          "
         >
-        </v-list-item> -->
+          <router-link
+            v-for="item in studentListItems"
+            :key="item.title"
+            tag="v-list-item"
+            :to="item.path"
+            link
+          >
+            <v-list-item-icon>
+              <v-icon>{{ item.icon }}</v-icon>
+            </v-list-item-icon>
+
+            <v-list-item-content>
+              <v-list-item-title>{{ item.title }}</v-list-item-title>
+            </v-list-item-content>
+          </router-link>
+        </div>
+
+        <div v-if="this.userStatus == 'BoardMember'">
+          <router-link
+            v-for="item in boardMemberListItems"
+            :key="item.title"
+            tag="v-list-item"
+            :to="item.path"
+            link
+          >
+            <v-list-item-icon>
+              <v-icon>{{ item.icon }}</v-icon>
+            </v-list-item-icon>
+
+            <v-list-item-content>
+              <v-list-item-title>{{ item.title }}</v-list-item-title>
+            </v-list-item-content>
+          </router-link>
+        </div>
       </v-list>
     </v-navigation-drawer>
 
@@ -67,7 +102,8 @@
 export default {
   data() {
     return {
-      items: [
+      userStatus: "BoardMember",
+      studentListItems: [
         { title: "Profile", icon: "mdi-account", path: "/profile" },
         { title: "Explore", icon: "mdi-magnify", path: "/explore" },
         { title: "Followings", icon: "mdi-account-plus", path: "/followings" },
@@ -84,6 +120,45 @@ export default {
         },
         { title: "Campus Map", icon: "mdi-map", path: "/campusMap" },
         { title: "Leaderboard", icon: "mdi-trophy", path: "/leaderboard" }
+      ],
+      boardMemberListItems: [
+        {
+          title: "Club Profile",
+          icon: "mdi-account-group",
+          path: "/clubProfile"
+        },
+        {
+          title: "Organize Event",
+          icon: "mdi-pencil",
+          path: "/organizeEvent"
+        },
+        {
+          title: "Event Result",
+          icon: "mdi-calendar-check",
+          path: "/eventResult"
+        },
+        {
+          title: "Rank Board Member",
+          icon: "mdi-arrow-up-down",
+          path: "/rankBoardMember"
+        }
+      ],
+      clubAdvisorListItems: [
+        {
+          title: "Profile",
+          icon: "mdi-account",
+          path: "/advisorProfile"
+        },
+        {
+          title: "Club Profile",
+          icon: "mdi-account-group",
+          path: "/clubProfile"
+        },
+        {
+          title: "Event Result",
+          icon: "mdi-calendar-check",
+          path: "/eventResult"
+        }
       ]
     };
   },
