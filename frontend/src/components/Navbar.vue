@@ -104,7 +104,7 @@
 export default {
   data() {
     return {
-      userStatus: "ClubAdvisor",
+      userStatus: "BoardMember",
       studentListItems: [
         { title: "Profile", icon: "mdi-account", path: "/profile" },
         { title: "Explore", icon: "mdi-magnify", path: "/explore" },
