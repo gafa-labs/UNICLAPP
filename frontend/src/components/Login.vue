@@ -19,7 +19,7 @@
                         name="Email"
                         prepend-icon="mdi-email"
                         type="text"
-                        color="light-blue accent-2"
+                        color="light-blue darken-3"
                       />
                       <v-text-field
                         id="password"
@@ -89,21 +89,21 @@
                             label="Name"
                             prepend-icon="mdi-account"
                             type="text"
-                            color="light-blue accent-2"
+                            color="light-blue darken-3"
                           />
                           <v-text-field
                             id="id"
                             label="ID"
                             prepend-icon="mdi-id-card"
                             type="text"
-                            color="light-blue accent-2"
+                            color="light-blue darken-3"
                           />
                           <v-text-field
                             id="department"
                             label="Department"
                             prepend-icon="mdi-school"
                             type="text"
-                            color="light-blue accent-2"
+                            color="light-blue darken-3"
                           ></v-text-field>
                         </v-form>
                       </v-card-text>
@@ -117,7 +117,7 @@
                             label="Email"
                             prepend-icon="mdi-email"
                             type="text"
-                            color="light-blue accent-2"
+                            color="light-blue darken-3"
                           />
                           <v-text-field
                             id="password"
@@ -128,7 +128,7 @@
                               showPassword ? 'mdi-eye' : 'mdi-eye-off'
                             "
                             :type="showPassword ? 'text' : 'password'"
-                            color="light-blue accent-2"
+                            color="light-blue darken-3"
                             @click:append="showPassword = !showPassword"
                           ></v-text-field>
                         </v-form>

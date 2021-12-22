@@ -13,6 +13,8 @@ import OrganizeEvent from "./components/OrganizeEvent";
 import EventResult from "./components/EventResult";
 import RankBoardMember from "./components/RankBoardMember";
 import AdvisorProfile from "./components/AdvisorProfile";
+import OemLogin from "./components/OemLogin"
+import OemMain from "./components/OemMain"
 
 export const routes = [
   { path: "/", component: Login },
@@ -29,5 +31,7 @@ export const routes = [
   { path: "/organizeEvent", component: OrganizeEvent },
   { path: "/eventResult", component: EventResult },
   { path: "/rankBoardMember", component: RankBoardMember },
-  { path: "/advisorProfile", component: AdvisorProfile }
+  { path: "/advisorProfile", component: AdvisorProfile },
+  { path: "/oemLogin", component: OemLogin },
+  { path: "/oemMain", component: OemMain }
 ];
