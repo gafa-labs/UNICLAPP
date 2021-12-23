@@ -2,9 +2,10 @@ from django.urls import path
 from club import views
 
 urlpatterns = [
-    path('clubs/', views.ClubViewSet.as_view({"get": "list"}), name='clubs'),
+    path(
+        'clubs/', views.ClubListAPIView.as_view(), name='clubs'),
     path("clubs/<int:pk>/",
-         views.ClubViewSet.as_view({"get": "retrieve"}), name="club"),
-    path("clubs/followings/", views.FollowingClubViewSet.as_view({"get": "list"}),
-         name="club_following")
+         views.ClubDetailAPIView.as_view(), name="club"),
+    # path("clubs/followings/", views.FollowingClubAPIView.as_view(),
+    # name="club_following")
 ]
