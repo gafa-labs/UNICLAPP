@@ -7,5 +7,4 @@ urlpatterns = [
          views.ClubViewSet.as_view({"get": "retrieve"}), name="club"),
     path("clubs/followings/", views.FollowingClubViewSet.as_view({"get": "list"}),
          name="club_following")
-
 ]
