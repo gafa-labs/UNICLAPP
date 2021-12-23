@@ -1,26 +1,20 @@
 from rest_framework import serializers
-from uniclapp.club.models import Club, Classroom, Event, Building, Evaluation
+from club.models import Club, ClubFollowing
 
 
 class ClubSerializer(serializers.ModelSerializer):
     class Meta:
         model = Club
-        exclude = ['logo']
+        fields = ["name", "about", "rate",
+                  "category", "number_of_followers", ]
 
 
-class ClassroomSerializer(serializers.ModelSerializer):
-    pass
+class ClubFollowingSerializer(serializers.ModelSerializer):
+    is_follow = serializers.SerializerMethodField()
 
-
-class EventSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Event
-        fields = '__all__'
+        model = Club
+        fields = ["name", "rate", "category", "number_of_followers", ]
 
-
-class EvaluationSerializer(serializers.ModelSerializer):
-    pass
-
-
-class BuildingSerializer(serializers.ModelSerializer):
-    pass
+    def get_is_follow(self, student):
+        return student.followers.all()

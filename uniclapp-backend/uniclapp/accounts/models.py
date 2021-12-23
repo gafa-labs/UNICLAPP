@@ -1,13 +1,13 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
-from django.db.models.enums import Choices
-from django.db.models.fields import EmailField, related
 from django.utils import timezone
-from club.enums import DepartmentNames
-
-
+from accounts import enums
 from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from rest_framework.authtoken.models import Token
+from django.conf import settings
 
 
 class UserManager(BaseUserManager):
@@ -15,6 +15,7 @@ class UserManager(BaseUserManager):
         if not email:
             raise ValueError(_('The Email must be set'))
         email = self.normalize_email(email)
+        self.email_validator(email)
         user = self.model(email=email, **extra_fields)
         user.set_password(password)
         user.save()
@@ -30,6 +31,17 @@ class UserManager(BaseUserManager):
             raise ValueError(_('Superuser must have is_superuser=True.'))
         return self.create_user(email, password, **extra_fields)
 
+    def email_validator(self, email):
+        if email:
+            print(email)
+            format = email.split("@",)[1]
+            if format == "ug.bilkent.edu.tr":
+                self.model(is_student=True)
+            elif format == "oem.bilkent.edu.tr":
+                self.model(is_oem=True)
+            else:
+                self.model(is_club_advisor=True)
+
 
 class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(_('email address'), unique=True)
@@ -37,8 +49,10 @@ class User(AbstractBaseUser, PermissionsMixin):
     full_name = models.CharField(max_length=60)
     is_staff = models.BooleanField(default=False)
     is_student = models.BooleanField(default=False)
-    is_club_supervisor = models.BooleanField(default=False)
-    #is_verified = models.BooleanField(default=False)
+    is_club_advisor = models.BooleanField(default=False)
+    is_board_member = models.BooleanField(default=False)
+    is_board_chairman = models.BooleanField(default=False)
+    is_oem = models.BooleanField(default=False)
 
     EMAIL_FIELD = "email"
     USERNAME_FIELD = "email"
@@ -53,30 +67,66 @@ class User(AbstractBaseUser, PermissionsMixin):
 class Student(models.Model):
     user = models.OneToOneField(
         User, on_delete=models.CASCADE, related_name="user")
-    department = models.CharField(
-        max_length=30, choices=DepartmentNames.choices)
-    is_club_coordinator = models.BooleanField(default=False)
-    is_regular_student = models.BooleanField(default=False)
+    department = models.TextField(choices=enums.DepartmentNames.choices)
     student_id = models.CharField(max_length=8, unique=True)
-    hes_code = models.CharField(max_length=10, unique=True)
+    hes_code = models.CharField(
+        max_length=10, unique=True, blank=True, null=True)
     ge_point = models.IntegerField(default=0)
 
+    def __str__(self):
+        return self.user.full_name
 
-class ClubCoordinator(models.Model):
+
+class BoardMember(models.Model):
     student = models.OneToOneField(
         Student, on_delete=models.CASCADE, related_name="%(class)s_user")
     club = models.OneToOneField(
         "club.Club", on_delete=models.CASCADE, related_name="responsible_club")
 
+    def __str__(self):
+        return self.student.user.full_name
 
-class ClubSupervisor(models.Model):
+
+class BoardChairman(models.Model):
+    student = models.OneToOneField(
+        Student, on_delete=models.CASCADE, related_name="%(class)s_user")
+
+    def __str__(self):
+        return self.student.user.full_name
+
+
+class ClubAdvisor(models.Model):
     user = models.OneToOneField(
         User, on_delete=models.CASCADE, related_name="%(class)s_user")
-    club = models.ForeignKey(
-        "club.Club", on_delete=models.SET_NULL, related_name="club", null=True, blank=True)
+    club = models.OneToOneField(
+        "club.Club", on_delete=models.CASCADE, related_name="club")
+
+    def __str__(self):
+        return self.user.full_name
+
+
+class OEM(models.Model):
+    user = models.OneToOneField(
+        User, on_delete=models.CASCADE, related_name="%(class)s_user")
+
+    def __str__(self):
+        return self.user.full_name
 
 
 class PSIScore(models.Model):
     student = models.OneToOneField(
         Student, on_delete=models.CASCADE, related_name="psi")
     score = models.FloatField(default=0)
+
+    def __str__(self):
+        return f'{self.student.user.full_name} - {self.score}'
+
+    # TODO
+    def update_score(self):
+        pass
+
+
+@receiver(post_save, sender=settings.AUTH_USER_MODEL)
+def create_auth_token(sender, instance=None, created=False, **kwargs):
+    if created:
+        Token.objects.create(user=instance)
