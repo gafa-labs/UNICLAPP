@@ -123,7 +123,7 @@
             class="elevation-4"
             item-key="name"
           >
-            <template v-slot:item.change="{ item }">
+            <template v-slot:[`item.change`]="{ item }">
               <v-btn
                 color="red lighten-1"
                 rounded
