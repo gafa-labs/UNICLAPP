@@ -1,4 +1,5 @@
 from rest_framework import generics
+from rest_framework import permissions
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 from accounts import serializers
@@ -66,11 +67,16 @@ class LogoutAPIView(generics.RetrieveAPIView):
         return Response(status=status.HTTP_200_OK)
 
 
-class StudentProfileAPIView(generics.GenericAPIView, mixins.RetrieveModelMixin):
+class StudentProfileAPIView(generics.RetrieveAPIView):
     serializer_class = serializers.StudentSerializer
     query_set = models.Student.objects.all()
 
-    def get(self, request, pk):
-        student = models.Student.objects.get(id=pk)
-        serializer = self.get_serializer(student)
-        return Response(serializer.data)
+    def get(self, request):
+        user = request.user
+        if user:
+            student = models.Student.objects.get(user=user)
+            serializer = self.get_serializer(student)
+            data = serializer.data
+            data["name"] = user.full_name
+            data["email"] = user.email
+            return Response(data)

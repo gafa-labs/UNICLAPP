@@ -58,7 +58,7 @@ class StudentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Student
-        fields = ["user_information", "student_id", "department", "hes_code"]
+        fields = ["student_id", "department", "hes_code"]
 
 
 class LoginSerializer(serializers.ModelSerializer):
