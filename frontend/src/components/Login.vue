@@ -76,7 +76,7 @@
                 <v-col cols="12" md="8">
                   <h1
                     v-color="this.$vuetify.theme.themes.dark.darkColor"
-                    class="text-center display-2 mt-5"
+                    class="text-center light-blue--text text--darken-3 display-2 mt-5"
                   >
                     Sign up to UNICLAPP
                   </h1>
