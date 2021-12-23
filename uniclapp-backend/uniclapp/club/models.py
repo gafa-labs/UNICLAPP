@@ -7,7 +7,6 @@ from club import enums
 class Club(models.Model):
     name = models.CharField(max_length=100)
     about = models.TextField()
-    logo = models.ImageField(upload_to="clubs/logos", null=True, blank=True)
     rate = models.FloatField(default=0)
     category = models.CharField(max_length=20, choices=enums.ClubTypes.choices)
 
