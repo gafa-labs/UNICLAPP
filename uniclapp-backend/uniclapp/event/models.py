@@ -19,7 +19,7 @@ class Event(models.Model):
     zoom_link = models.URLField(blank=True)
     building = models.ForeignKey(
         "place.Building", on_delete=SET_NULL, blank=True, null=True)
-    date = models.DateTimeField()
+    datetime = models.DateTimeField()
 
     @property
     def is_past(self):
@@ -29,9 +29,9 @@ class Event(models.Model):
 
 
 class EventEnrollment(models.Model):
-    student = models.ForeignKey(
+    student = models.OneToOneField(
         "accounts.Student", on_delete=models.CASCADE, related_name="enrolled_students")
-    event = models.ForeignKey(
+    event = models.OneToOneField(
         Event, on_delete=models.CASCADE, related_name="enrolled_events")
     created = models.DateTimeField(auto_now_add=True)
 
