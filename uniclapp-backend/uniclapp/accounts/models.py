@@ -66,7 +66,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
 class Student(models.Model):
     user = models.OneToOneField(
-        User, on_delete=models.CASCADE, related_name="user")
+        User, on_delete=models.CASCADE, related_name="student")
     department = models.TextField(choices=enums.DepartmentNames.choices)
     student_id = models.CharField(max_length=8, unique=True)
     hes_code = models.CharField(

@@ -10,6 +10,7 @@ from club.serializers import ClubSerializer
 from accounts.models import Student
 from accounts.serializers import StudentSerializer
 from club import utils
+from club.serializers import ClubFollowingSerializer
 
 
 class ClubListAPIView(generics.ListAPIView):
@@ -24,20 +25,21 @@ class ClubDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
 
 
 class FollowingClubAPIView(generics.RetrieveAPIView):
-    serializer_class = StudentSerializer
-    queryset = Student.objects.all()
+    serializer_class = ClubFollowingSerializer
+    queryset = Club.objects.all()
 
     def get(self, request):
         response_data = {}
         user = request.user
         if user:
-            student = self.get_queryset(user=user)
+            student = user.student
             if student:
-                data = self.get_serializer(student)
-                clubs = utils.get_following_club_list(student.first().id)
-                print(clubs)
-                response_data["following_clubs"] = clubs
-                response_data["student"] = data
+                clubs = self.get_queryset()
+                serializer = self.get_serializer(clubs, many=True)
+                data = serializer.data
+                following_clubs = utils.get_following_club_list(student.id)
+                response_data["following_clubs"] = following_clubs
+                response_data["all_clubs"] = data
                 return Response(response_data)
             else:
                 return ValidationError({"student": "student does not exists!"})
