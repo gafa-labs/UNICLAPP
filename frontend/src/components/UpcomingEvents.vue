@@ -156,6 +156,7 @@
   </v-container>
 </template>
 <script>
+import axios from "axios";
 export default {
   data() {
     return {
@@ -313,6 +314,26 @@ export default {
         return event.name.toLowerCase().includes(this.search.toLowerCase());
       });
     }
+  },
+  created() {
+    axios
+      .get("http://127.0.0.1:8000/api/events/")
+      .then(response => {
+        response.data.map(event => {
+          if (event.is_online) {
+            event.location = "Zoom";
+          }
+          console.log(event);
+          axios
+            .get("http://127.0.0.1:8000/api/clubs/" + event.club + "/")
+            .then(club => {
+              event.club = club.data.name;
+            })
+            .catch(er => console.log(er));
+        });
+        this.allClubsEvents = response.data;
+      })
+      .catch(e => console.log(e));
   }
 };
 </script>

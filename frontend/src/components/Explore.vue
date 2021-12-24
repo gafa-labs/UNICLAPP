@@ -58,7 +58,7 @@
       item-key="name"
       :search="search"
     >
-      <template v-slot:item.status="{ item }">
+      <template v-slot:[`item.status`]="{ item }">
         <v-btn
           color="green lighten-1"
           rounded
@@ -80,6 +80,7 @@
   </v-container>
 </template>
 <script>
+import axios from "axios";
 export default {
   data() {
     return {
@@ -93,57 +94,7 @@ export default {
       ],
       selected: ["Business", "Software", "Science", "Hobbies", "Entertainment"],
       search: "",
-      clubs: [
-        {
-          name: "ACM Bilkent Club",
-          category: ["Business,Software,Science"],
-          followers: "1545",
-          rate: "4.5",
-          status: "unfollowing"
-        },
-        {
-          name: "Management and Economics Society",
-          category: ["Business"],
-          followers: "6889",
-          rate: "4.6",
-          status: "following"
-        },
-        {
-          name: "Astronomy Society",
-          category: ["Science,Hobbies"],
-          followers: "1276",
-          rate: "4.7",
-          status: "following"
-        },
-        {
-          name: "Young Entrepreneur Society",
-          category: ["Entertainment,Business"],
-          followers: "5642",
-          rate: "4.5",
-          status: "unfollowing"
-        },
-        {
-          name: "E-Sport Society",
-          category: ["Entertainment,Hobbies"],
-          followers: "2036",
-          rate: "4.2",
-          status: "following"
-        },
-        {
-          name: "Science Fiction and Fantasy Society",
-          category: ["Entertainment,Hobbies"],
-          followers: "891",
-          rate: "4.3",
-          status: "following"
-        },
-        {
-          name: "Operational Research Club",
-          category: ["Business"],
-          followers: "1149",
-          rate: "4.0",
-          status: "unfollowing"
-        }
-      ]
+      clubs: []
     };
   },
   computed: {
@@ -156,21 +107,11 @@ export default {
         },
         {
           text: "Category",
-          value: "category",
-          filter: value => {
-            var arr = value[0].split(",");
-            var check = false;
-            this.selected.forEach(item => {
-              if (arr.includes(item)) {
-                check = true;
-              }
-            });
-            return check;
-          }
+          value: "category"
         },
         {
           text: "Followers",
-          value: "followers"
+          value: "number_of_followers"
         },
         {
           text: "Rate",
@@ -204,6 +145,19 @@ export default {
     unfollow(item) {
       item.status = "unfollowing";
     }
+  },
+  created() {
+    axios
+      .get("http://127.0.0.1:8000/api/clubs/")
+      .then(response => {
+        response.data.map(club => {
+          if (!club.number_of_followers) {
+            club.number_of_followers = 0;
+          }
+        });
+        this.clubs = response.data;
+      })
+      .catch(e => console.log(e));
   }
 };
 </script>
