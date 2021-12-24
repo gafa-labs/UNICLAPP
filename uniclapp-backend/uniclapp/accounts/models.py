@@ -81,7 +81,7 @@ class BoardMember(models.Model):
     student = models.OneToOneField(
         Student, on_delete=models.CASCADE, related_name="%(class)s_user")
     club = models.OneToOneField(
-        "club.Club", on_delete=models.CASCADE, related_name="responsible_club")
+        "club.Club", on_delete=models.CASCADE, related_name="boardmembers")
 
     def __str__(self):
         return self.student.user.full_name

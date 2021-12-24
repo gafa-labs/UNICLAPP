@@ -8,7 +8,7 @@ class Event(models.Model):
     name = models.CharField(max_length=100)
     category = models.TextField(choices=enums.EventTypes.choices)
     status = models.TextField(choices=enums.EventStatus.choices)
-    club = models.OneToOneField(
+    club = models.ForeignKey(
         "club.Club", on_delete=models.CASCADE, related_name="%(class)s_events")
     about = models.TextField()
     ge_status = models.BooleanField(default=False)
@@ -23,7 +23,7 @@ class Event(models.Model):
 
     @property
     def is_past(self):
-        if self.date < timezone.now():
+        if self.datetime < timezone.now():
             return True
         return False
 

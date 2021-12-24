@@ -16,24 +16,29 @@ class EventDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
     lookup_field = "pk"
 
 
-class OnlineEventAPIView(viewsets.GenericViewSet, mixins.ListModelMixin):
-    serializer_class = serializers.OnlineEventSerializer
-    queryset = Event.objects.filter(is_online=True)
+class PastEventAPIView(generics.ListAPIView):
+    serializer_class = serializers.EventSerializer
+    queryset = Event.objects.all()
 
-    def list(self, request):
-        online_event_queryset = self.filter_queryset(self.get_queryset())
-        serializer = self.get_serializer(online_event_queryset, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+    def get(self, request):
+        past_events = [x for x in Event.objects.all() if x.is_past]
+        serializer = self.get_serializer(past_events, many=True)
+        return Response(serializer.data)
 
 
-class F2FEventViewSet(viewsets.GenericViewSet, mixins.ListModelMixin):
-    serializer_class = serializers.F2FEventSerializer
-    queryset = Event.objects.filter(is_online=False)
+class UpcomingEventAPIView(generics.ListAPIView):
+    serializer_class = serializers.EventSerializer
+    queryset = Event.objects.all()
 
-    def list(self, request):
-        f2f_event_queryset = self.filter_queryset(self.get_queryset())
-        serializer = self.get_serializer(f2f_event_queryset, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+    def get(self, request):
+        upcoming_events = [x for x in Event.objects.all() if not x.is_past]
+        serializer = self.get_serializer(upcoming_events, many=True)
+        return Response(serializer.data)
+
+
+class PendingEventAPIView(generics.ListAPIView):
+    serializer_class = serializers.EventSerializer
+    queryset = Event.objects.filter(status="pending")
 
 
 class ClubEventsViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.RetrieveModelMixin):
