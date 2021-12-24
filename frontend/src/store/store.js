@@ -9,5 +9,14 @@ export const store = new Vuex.Store({
   state: {
     isLoggedIn: false
   },
+<<<<<<< HEAD
+  mutations: {
+    initialiseStore(state) {
+      console.log(localStorage.getItem("status"));
+      state.isLoggedIn = localStorage.getItem("status");
+    }
+  }
+=======
   plugins: [createPersistedState({})]
+>>>>>>> parent of 8e4f35b (Merge branch 'unstable-frontendV2' into unstable-backendV2)
 });

@@ -89,6 +89,7 @@ export default {
   },
   methods: {
     logout() {
+      localStorage.removeItem("user");
       this.$router.push("/");
       this.$store.state.isLoggedIn = false;
     }

@@ -36,6 +36,42 @@
                     :key="event"
                     flat
                   >
+<<<<<<< HEAD
+                  <v-row class="mt-6 text-h6"
+                    >Location: {{ event.location }}</v-row
+                  >
+                  <v-row class="mt-2 text-h6">Date: {{ event.date }}</v-row>
+                  <v-row class="mt-2 text-h6">Time: {{ event.time }}</v-row>
+                </v-card-text>
+                <v-row style="position: relative;">
+                  <v-col cols="6">
+                    <v-btn
+                      style="position: absolute; bottom:20px;"
+                      color="deep-orange lighten-1"
+                      text
+                      >Details</v-btn
+                    >
+                  </v-col>
+                  <v-spacer></v-spacer>
+                  <v-col cols="6">
+                    <v-btn
+                      style="position: absolute; bottom:20px;"
+                      color="red lighten-1"
+                      text
+                      v-if="event.status === 'attending'"
+                      @click="event.status = 'not attending'"
+                      >Cancel</v-btn
+                    >
+                    <v-btn
+                      style="position: absolute; bottom:20px;"
+                      color="green lighten-1"
+                      text
+                      v-if="event.status === 'not attending'"
+                      @click="event.status = 'attending'"
+                      >Attend</v-btn
+                    >
+                  </v-col>
+=======
                     <v-card-title>Club: {{ event.club }}</v-card-title>
                     <v-card-text class="text--primary">
                       <div>Event: {{ event.event }}</div>
@@ -44,6 +80,7 @@
                       <div>Date: {{ event.date }}</div>
                     </v-card-text>
                   </v-card>
+>>>>>>> parent of 8e4f35b (Merge branch 'unstable-frontendV2' into unstable-backendV2)
                 </v-row>
               </v-col>
             </v-row>
@@ -62,6 +99,42 @@
                     v-for="event in followingClubsEvents"
                     :key="event"
                   >
+<<<<<<< HEAD
+                  <v-row class="mt-6 text-h6"
+                    >Location: {{ event.location }}</v-row
+                  >
+                  <v-row class="mt-2 text-h6">Date: {{ event.date }}</v-row>
+                  <v-row class="mt-2 text-h6">Time: </v-row>
+                </v-card-text>
+                <v-row style="position: relative;">
+                  <v-col cols="6">
+                    <v-btn
+                      style="position: absolute; bottom:20px;"
+                      color="deep-orange lighten-1"
+                      text
+                      >Details</v-btn
+                    >
+                  </v-col>
+                  <v-spacer></v-spacer>
+                  <v-col cols="6">
+                    <v-btn
+                      style="position: absolute; bottom:20px;"
+                      color="red lighten-1"
+                      text
+                      v-if="event.status === 'attending'"
+                      @click="event.status = 'not attending'"
+                      >Cancel</v-btn
+                    >
+                    <v-btn
+                      style="position: absolute; bottom:20px;"
+                      color="green lighten-1"
+                      text
+                      v-if="event.status === 'not attending'"
+                      @click="event.status = 'attending'"
+                      >Attend</v-btn
+                    >
+                  </v-col>
+=======
                     <v-card-title>Club: {{ event.club }}</v-card-title>
                     <v-card-text class="text--primary">
                       <div>Event: {{ event.event }}</div>
@@ -70,6 +143,7 @@
                       <div>Date: {{ event.date }}</div>
                     </v-card-text>
                   </v-card>
+>>>>>>> parent of 8e4f35b (Merge branch 'unstable-frontendV2' into unstable-backendV2)
                 </v-row>
               </v-col>
             </v-row>
@@ -279,6 +353,51 @@ export default {
       tab: null,
       sortElements: ["Followers", "Rate", "Events", "Participants"]
     };
+<<<<<<< HEAD
+  },
+  methods: {
+    searched(events) {
+      if (this.search === "") {
+        return events;
+      }
+      return events.filter(event => {
+        return event.name.toLowerCase().includes(this.search.toLowerCase());
+      });
+    }
+  },
+  created() {
+    axios
+      .get("http://127.0.0.1:8000/api/events/")
+      .then(response => {
+        response.data.map(event => {
+          if (event.is_online) {
+            event.location = "Zoom";
+          }
+          console.log(event);
+          var eventDate = new Date(event.datetime);
+          var eventHour = eventDate.getHours().toString();
+          var eventMinutes = eventDate.getMinutes().toString();
+          if (eventMinutes.length == 1) {
+            eventMinutes = "0" + eventMinutes;
+          } else if (eventHour.length == 1) {
+            eventHour = "0" + eventHour;
+          }
+          var eventTime = eventHour + "." + eventMinutes;
+          var eventDay = eventDate.toLocaleDateString();
+          event.date = eventDay;
+          event.time = eventTime;
+          axios
+            .get("http://127.0.0.1:8000/api/clubs/" + event.club + "/")
+            .then(club => {
+              event.club = club.data.name;
+            })
+            .catch(er => console.log(er));
+        });
+        this.allClubsEvents = response.data;
+      })
+      .catch(e => console.log(e));
+=======
+>>>>>>> parent of 8e4f35b (Merge branch 'unstable-frontendV2' into unstable-backendV2)
   }
 };
 </script>
