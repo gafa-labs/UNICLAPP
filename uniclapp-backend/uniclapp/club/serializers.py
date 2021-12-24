@@ -1,26 +1,15 @@
 from rest_framework import serializers
-from uniclapp.club.models import Club, Classroom, Event, Building, Evaluation
+from club.models import Club, ClubFollowing
 
 
 class ClubSerializer(serializers.ModelSerializer):
     class Meta:
         model = Club
-        exclude = ['logo']
+        fields = ["id", "name", "about", "rate",
+                  "category", "number_of_followers", ]
 
 
-class ClassroomSerializer(serializers.ModelSerializer):
-    pass
-
-
-class EventSerializer(serializers.ModelSerializer):
+class ClubFollowingSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Event
-        fields = '__all__'
-
-
-class EvaluationSerializer(serializers.ModelSerializer):
-    pass
-
-
-class BuildingSerializer(serializers.ModelSerializer):
-    pass
+        model = Club
+        fields = ["name", "rate", "category", "number_of_followers", ]

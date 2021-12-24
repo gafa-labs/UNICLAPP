@@ -1,6 +1,5 @@
 from django.db import models
-from django.db.models.deletion import CASCADE, SET_NULL
-from django.db.models.enums import TextChoices
+from django.db.models.deletion import CASCADE
 from club import enums
 from django.core.validators import MinValueValidator, MaxValueValidator
 
@@ -8,9 +7,13 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 class Club(models.Model):
     name = models.CharField(max_length=100)
     about = models.TextField()
-    logo = models.ImageField(upload_to="clubs/logos", null=True, blank=True)
-    rate = models.FloatField(default=0)
+    rate = models.FloatField(default=0, validators=[
+        MinValueValidator(0), MaxValueValidator(5)])
     category = models.CharField(max_length=20, choices=enums.ClubTypes.choices)
+
+    @property
+    def number_of_followers(self):
+        return len(self.followers.all())
 
     class Meta:
         ordering = ["name"]
@@ -18,40 +21,21 @@ class Club(models.Model):
     def __str__(self):
         return self.name
 
-
-class Building(models.Model):
-    name = models.CharField(max_length=10, choices=enums.BuildingNames.choices)
-    available = models.BooleanField(default=True)
-
-
-class Classroom(models.Model):
-    name = models.CharField(
-        max_length=3, choices=enums.ClassrooomNames.choices)
-    building = models.ForeignKey(
-        Building, on_delete=models.CASCADE, related_name="classrooms")
-    available = models.BooleanField(default=True)
+    def calculate_average_rate(self):
+        average = self.rate / len(self.events)
+        self.rate = average
+        self.save(update_fields=["rate"])
 
 
-class Event(models.Model):
+class ClubFollowing(models.Model):
+    student = models.ForeignKey(
+        "accounts.Student", on_delete=models.CASCADE, related_name="followees")
     club = models.ForeignKey(
-        Club, on_delete=models.CASCADE, related_name="events")
-    poster = models.ImageField(
-        upload_to="clubs/{self.name}/events", null=True, blank=True)
-    name = models.CharField(max_length=100)
-    about = models.TextField()
-    ge_status = models.BooleanField(default=False)
-    online = models.BooleanField(default=False),
-    zoom_link = models.URLField()
-    building = models.ForeignKey(
-        Building, on_delete=SET_NULL, blank=True, null=True)
+        Club, on_delete=models.CASCADE, related_name="followers")
+    created = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+        ordering = ["-created"]
 
-class Evaluation(models.Model):
-    owner = models.ForeignKey(
-        "accounts.Student", on_delete=models.CASCADE, related_name="evaluations")
-    content = models.TextField()
-    rate = models.IntegerField(default=0, validators=[
-                               MinValueValidator(0), MaxValueValidator(10)])
-    event = models.ForeignKey(
-        Event, on_delete=models.CASCADE, related_name="evaluations")
-    date = models.DateTimeField(auto_now_add=True)
+    def __str__(self):
+        return f"{self.student.student_id} follows {self.club.name}"

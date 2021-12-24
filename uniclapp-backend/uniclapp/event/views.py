@@ -1,0 +1,51 @@
+from django.shortcuts import render
+from rest_framework import generics, mixins, status, viewsets
+from rest_framework.response import Response
+from event import serializers
+from event.models import Event
+
+
+class EventAPIView(generics.ListAPIView):
+    serializer_class = serializers.EventSerializer
+    queryset = Event.objects.all()
+
+
+class EventDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = serializers.EventSerializer
+    queryset = Event.objects.all()
+    lookup_field = "pk"
+
+
+class PastEventAPIView(generics.ListAPIView):
+    serializer_class = serializers.EventSerializer
+    queryset = Event.objects.all()
+
+    def get(self, request):
+        past_events = [x for x in Event.objects.all() if x.is_past]
+        serializer = self.get_serializer(past_events, many=True)
+        return Response(serializer.data)
+
+
+class UpcomingEventAPIView(generics.ListAPIView):
+    serializer_class = serializers.EventSerializer
+    queryset = Event.objects.all()
+
+    def get(self, request):
+        upcoming_events = [x for x in Event.objects.all() if not x.is_past]
+        serializer = self.get_serializer(upcoming_events, many=True)
+        return Response(serializer.data)
+
+
+class PendingEventAPIView(generics.ListAPIView):
+    serializer_class = serializers.EventSerializer
+    queryset = Event.objects.filter(event_status="pending")
+
+
+class ClubEventsViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.RetrieveModelMixin):
+    serializer_class = serializers.EventSerializer
+    queryset = Event.objects.all()
+
+    def list(self, request, pk):
+        events = Event.objects.filter(club=pk)
+        serializer = serializers.EventSerializer(events, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
