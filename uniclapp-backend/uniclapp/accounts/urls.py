@@ -10,4 +10,12 @@ urlpatterns = [
          views.StudentProfileAPIView.as_view(), name='student-profile'),
     path('profiles/student/', views.StudentProfileAPIView.as_view(),
          name='student_profile'),
+    # path('profiles/board-member/', views.StudentProfileAPIView.as_view(),
+    # name='board_member_profile'),
+    # path('profiles/board-chairman/', views.StudentProfileAPIView.as_view(),
+    # name='board_chairman_profile'),
+    # path('profiles/club-advisor/', views.StudentProfileAPIView.as_view(),
+    # name='club_advisor_profile'),
+    # path('profiles/oem/', views.StudentProfileAPIView.as_view(),
+    # name='oem_proile'),
 ]

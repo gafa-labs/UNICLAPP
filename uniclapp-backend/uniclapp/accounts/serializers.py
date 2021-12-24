@@ -54,7 +54,6 @@ class StudentRegisterSerializer(serializers.ModelSerializer):
 
 
 class StudentSerializer(serializers.ModelSerializer):
-    user_information = UserSerializer
 
     class Meta:
         model = Student
