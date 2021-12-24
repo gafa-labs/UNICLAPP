@@ -18,6 +18,7 @@
                         label="Email"
                         name="Email"
                         prepend-icon="mdi-email"
+                        v-model="information.email"
                         type="text"
                         color="light-blue darken-3"
                       />
@@ -25,6 +26,7 @@
                         id="password"
                         label="Password"
                         name="password"
+                        v-model="information.password"
                         prepend-icon="mdi-lock"
                         :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
                         :type="showPassword ? 'text' : 'password'"
@@ -87,6 +89,7 @@
                           <v-text-field
                             id="name"
                             label="Name"
+                            v-model="register.full_name"
                             prepend-icon="mdi-account"
                             type="text"
                             color="light-blue darken-3"
@@ -94,6 +97,7 @@
                           <v-text-field
                             id="id"
                             label="ID"
+                            v-model="register.studentid"
                             prepend-icon="mdi-id-card"
                             type="text"
                             color="light-blue darken-3"
@@ -101,6 +105,7 @@
                           <v-text-field
                             id="department"
                             label="Department"
+                            v-model="register.department"
                             prepend-icon="mdi-school"
                             type="text"
                             color="light-blue darken-3"
@@ -115,6 +120,7 @@
                           <v-text-field
                             id="email"
                             label="Email"
+                            v-model="register.email"
                             prepend-icon="mdi-email"
                             type="text"
                             color="light-blue darken-3"
@@ -123,6 +129,7 @@
                             id="password"
                             label="Password"
                             name="password"
+                            v-model="register.password"
                             prepend-icon="mdi-lock"
                             :append-icon="
                               showPassword ? 'mdi-eye' : 'mdi-eye-off'
@@ -136,7 +143,10 @@
                     </v-col>
                   </v-row>
                   <div class="text-center mb-10">
-                    <v-btn rounded color="light-blue darken-3" dark
+                    <v-btn
+                      @click="registerStudent"
+                      color="light-blue darken-3"
+                      dark
                       >SIGN UP</v-btn
                     >
                   </div>
@@ -171,9 +181,18 @@
   </v-container>
 </template>
 <script>
+import axios from "axios";
 export default {
   data() {
     return {
+      information: { email: "", password: "" },
+      register: {
+        email: "",
+        password: "",
+        full_name: "",
+        studentid: "",
+        department: ""
+      },
       darkColor: "light-blue darken-3",
       step: 1,
       showPassword: false
@@ -182,10 +201,38 @@ export default {
   props: {
     source: String
   },
+  created() {
+    this.$store.state.isLoggedIn = false;
+    localStorage.setItem("status", false);
+  },
   methods: {
     goToMainPage() {
-      this.$store.state.isLoggedIn = true;
-      this.$router.push("/main");
+      axios
+        .post("http://localhost:8000/api/login/", this.information)
+        .then(response => {
+          console.log(response);
+          localStorage.setItem("user", JSON.stringify(response.data));
+          this.$store.state.isLoggedIn = true;
+          localStorage.setItem("status", true);
+          this.$router.push("/main");
+        })
+        .catch(e => {
+          console.log(e.response);
+          if (e.response.status == 400) {
+            alert("Email or password is incorrect. Please try again!");
+            return;
+          }
+        });
+    },
+    registerStudent() {
+      console.log("girdi");
+      axios
+        .post("http://localhost:8000/api/register/", this.register)
+        .then(response => {
+          console.log(response.data);
+          this.step--;
+        })
+        .catch(e => console.log(e.response));
     }
   }
 };

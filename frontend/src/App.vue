@@ -17,6 +17,7 @@ export default {
   data: () => ({
     //
   }),
+
   computed: {
     isLoggedIn() {
       return this.$store.state.isLoggedIn;

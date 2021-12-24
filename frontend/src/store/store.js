@@ -8,5 +8,11 @@ Vue.use(Vuex);
 export const store = new Vuex.Store({
   state: {
     isLoggedIn: false
+  },
+  mutations: {
+    initialiseStore(state) {
+      console.log(localStorage.getItem("status"));
+      state.isLoggedIn = localStorage.getItem("status");
+    }
   }
 });

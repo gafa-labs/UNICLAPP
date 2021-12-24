@@ -49,6 +49,7 @@
                     >Location: {{ event.location }}</v-row
                   >
                   <v-row class="mt-2 text-h6">Date: {{ event.date }}</v-row>
+                  <v-row class="mt-2 text-h6">Time: {{ event.time }}</v-row>
                 </v-card-text>
                 <v-row style="position: relative;">
                   <v-col cols="6">
@@ -117,6 +118,7 @@
                     >Location: {{ event.location }}</v-row
                   >
                   <v-row class="mt-2 text-h6">Date: {{ event.date }}</v-row>
+                  <v-row class="mt-2 text-h6">Time: </v-row>
                 </v-card-text>
                 <v-row style="position: relative;">
                   <v-col cols="6">
@@ -324,6 +326,18 @@ export default {
             event.location = "Zoom";
           }
           console.log(event);
+          var eventDate = new Date(event.datetime);
+          var eventHour = eventDate.getHours().toString();
+          var eventMinutes = eventDate.getMinutes().toString();
+          if (eventMinutes.length == 1) {
+            eventMinutes = "0" + eventMinutes;
+          } else if (eventHour.length == 1) {
+            eventHour = "0" + eventHour;
+          }
+          var eventTime = eventHour + "." + eventMinutes;
+          var eventDay = eventDate.toLocaleDateString();
+          event.date = eventDay;
+          event.time = eventTime;
           axios
             .get("http://127.0.0.1:8000/api/clubs/" + event.club + "/")
             .then(club => {

@@ -18,7 +18,7 @@
           class="mb-6"
         ></v-text-field>
         <v-text-field
-          :value="information.id"
+          :value="information.student_id"
           label="ID"
           outlined
           disabled
@@ -66,7 +66,7 @@
         <v-row>
           <v-col cols="12" md="8">
             <v-text-field
-              :value="information.hesCode"
+              :value="information.hes_code"
               label="HES Code"
               outlined
               dense
@@ -78,7 +78,13 @@
             <v-btn elevation="2" rounded color="green lighten-1">Submit</v-btn>
           </v-col>
         </v-row>
-        <v-text-field value="Change Password" filled disabled dense class="mt-4"></v-text-field>
+        <v-text-field
+          value="Change Password"
+          filled
+          disabled
+          dense
+          class="mt-4"
+        ></v-text-field>
         <v-text-field
           label="Old Password"
           outlined
@@ -101,7 +107,9 @@
           class="mt-1"
         ></v-text-field>
         <v-row class="mt-1 justify-center">
-          <v-btn elevation="2" rounded color="light-blue accent-2">Apply Change</v-btn>
+          <v-btn elevation="2" rounded color="light-blue accent-2"
+            >Apply Change</v-btn
+          >
         </v-row>
       </v-col>
     </v-row>
@@ -109,18 +117,31 @@
 </template>
 
 <script>
+import axios from "axios";
 export default {
   data() {
     return {
       information: {
-        name: "Ayberk Yaşa",
-        id: "21800000",
-        email: "ayberk.yasa@ug.bilkent.edu.tr",
-        department: "Computer Science",
+        name: "",
+        student_id: "",
+        email: "",
+        department: "",
         psi: 98,
-        hesCode: "1111-2222-33",
-      },
+        hes_code: ""
+      }
     };
   },
+  created() {
+    var token = "Token " + JSON.parse(localStorage.getItem("user")).token;
+
+    axios
+      .get("http://localhost:8000/api/profiles/student/", {
+        headers: { Authorization: token }
+      })
+      .then(response => {
+        this.information = response.data;
+      })
+      .catch(e => console.log(e));
+  }
 };
 </script>
