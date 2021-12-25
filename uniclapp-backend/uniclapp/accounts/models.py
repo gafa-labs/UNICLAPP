@@ -79,8 +79,8 @@ class Student(models.Model):
 
 class BoardMember(models.Model):
     student = models.OneToOneField(
-        Student, on_delete=models.CASCADE, related_name="%(class)s_user")
-    club = models.OneToOneField(
+        Student, on_delete=models.CASCADE, related_name="boardmember")
+    club = models.ForeignKey(
         "club.Club", on_delete=models.CASCADE, related_name="boardmembers")
 
     def __str__(self):
@@ -89,7 +89,7 @@ class BoardMember(models.Model):
 
 class BoardChairman(models.Model):
     student = models.OneToOneField(
-        Student, on_delete=models.CASCADE, related_name="%(class)s_user")
+        Student, on_delete=models.CASCADE, related_name="board_chairman")
 
     def __str__(self):
         return self.student.user.full_name
@@ -97,7 +97,7 @@ class BoardChairman(models.Model):
 
 class ClubAdvisor(models.Model):
     user = models.OneToOneField(
-        User, on_delete=models.CASCADE, related_name="%(class)s_user")
+        User, on_delete=models.CASCADE, related_name="club_advisor")
     club = models.OneToOneField(
         "club.Club", on_delete=models.CASCADE, related_name="club")
 
@@ -107,7 +107,7 @@ class ClubAdvisor(models.Model):
 
 class OEM(models.Model):
     user = models.OneToOneField(
-        User, on_delete=models.CASCADE, related_name="%(class)s_user")
+        User, on_delete=models.CASCADE, related_name="oem")
 
     def __str__(self):
         return self.user.full_name

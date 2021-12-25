@@ -1,5 +1,4 @@
 from django.db import models
-from django.db.models.deletion import SET_NULL
 from event import enums
 from django.utils import timezone
 from django.core.validators import MinValueValidator, MaxValueValidator
@@ -14,12 +13,9 @@ class Event(models.Model):
     description = models.TextField()
     ge_status = models.BooleanField(default=False)
     ge_point = models.IntegerField(default="10")
-    duration = models.FloatField(default=0)
-    capacity = models.IntegerField(default=0)
     is_online = models.BooleanField(default=False)
     zoom_link = models.URLField(blank=True)
-    location = models.ForeignKey(
-        "place.Building", on_delete=SET_NULL, blank=True, null=True)
+    location = models.TextField()
     start_datetime = models.DateTimeField()
     end_datetime = models.DateTimeField()
     rate = models.FloatField(default=0, validators=[
