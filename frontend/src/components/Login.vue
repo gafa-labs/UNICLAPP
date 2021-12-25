@@ -214,7 +214,7 @@ export default {
           localStorage.setItem("user", JSON.stringify(response.data));
           this.$store.state.isLoggedIn = true;
           localStorage.setItem("status", true);
-          this.$router.push("/main");
+          this.$router.push("/profile");
         })
         .catch(e => {
           console.log(e.response);
@@ -225,7 +225,6 @@ export default {
         });
     },
     registerStudent() {
-      console.log("girdi");
       axios
         .post("http://localhost:8000/api/register/", this.register)
         .then(response => {

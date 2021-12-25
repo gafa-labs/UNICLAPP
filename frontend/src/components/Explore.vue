@@ -192,12 +192,6 @@ export default {
     }
   },
   created() {
-    // var token = "Token " + JSON.parse(localStorage.getItem("user")).token;
-    // var headers = {
-    //   headers: {
-    //     Authorization: token
-    //   }
-    // };
     axios
       .get("http://127.0.0.1:8000/api/clubs/explore/", this.header)
       .then(response => {
