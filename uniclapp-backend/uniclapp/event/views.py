@@ -42,7 +42,8 @@ class UpcomingEventAPIView(generics.ListAPIView):
             student = user.student
             if student:
                 response_data = {}
-                all_upcoming_events = Event.objects.filter(is_past=False)
+                all_upcoming_events = [
+                    x for x in Event.objects.all() if x.event_status == "upcoming"]
                 serializer = self.get_serializer(
                     all_upcoming_events, many=True)
                 data = serializer.data

@@ -6,8 +6,8 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 
 class Event(models.Model):
     name = models.CharField(max_length=100)
-    category = models.TextField(choices=enums.EventTypes.choices)
-    event_status = models.TextField(choices=enums.EventStatus.choices)
+    event_status = models.TextField(
+        choices=enums.EventStatus.choices, default=enums.EventStatus.pending)
     club = models.ForeignKey(
         "club.Club", on_delete=models.CASCADE, related_name="%(class)s_events")
     description = models.TextField()
@@ -22,10 +22,10 @@ class Event(models.Model):
         MinValueValidator(0), MaxValueValidator(5)])
 
     @property
-    def is_past(self):
-        if self.datetime < timezone.now():
-            return True
-        return False
+    def update_status(self):
+        if self.end_datetime > timezone.now():
+            self.event_status = enums.EventStatus.past
+            self.save(update_fields=["event_status"])
 
     def calculate_average_rate(self):
         average = self.rate / len(self.evaluations)

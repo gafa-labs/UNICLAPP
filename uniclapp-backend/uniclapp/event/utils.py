@@ -26,10 +26,11 @@ def get_student_enrolled_upcoming_events(student_id):
     student = Student.objects.get(id=student_id)
     if student:
         all_enrollments = EventEnrollment.objects.filter(
-            student=student, is_past=False).all()
+            student=student).all()
         all_enrollments = list(all_enrollments)
         events = []
         for instance in all_enrollments:
-            events.append(instance.event.id)
+            if instance.event.event_status == "upcoming":
+                events.append(instance.event.id)
         return events
     return None
