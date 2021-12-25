@@ -12,4 +12,4 @@ class ClubSerializer(serializers.ModelSerializer):
 class BasicClubSerializer(serializers.ModelSerializer):
     class Meta:
         model = Club
-        fields = ["name", "rate", "category", "number_of_followers", ]
+        fields = ["id", "name", "rate", "category", "number_of_followers", ]
