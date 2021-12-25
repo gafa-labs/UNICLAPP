@@ -13,25 +13,48 @@ import OrganizeEvent from "./components/OrganizeEvent";
 import EventResult from "./components/EventResult";
 import RankBoardMember from "./components/RankBoardMember";
 import AdvisorProfile from "./components/AdvisorProfile";
-import OemLogin from "./components/OemLogin"
-import OemMain from "./components/OemMain"
+import OemLogin from "./components/OemLogin";
+import OemMain from "./components/OemMain";
+
+const before = function(to, from, next) {
+  if (localStorage.getItem("status") === "true") {
+    next();
+  } else {
+    next("/");
+  }
+};
 
 export const routes = [
-  { path: "/", component: Login },
-  { path: "/main", component: Main },
-  { path: "/profile", component: Profile },
-  { path: "/explore", component: Explore },
-  { path: "/followings", component: Followings },
-  { path: "/upcomingEvents", component: UpcomingEvents },
-  { path: "/eventHistory", component: EventHistory },
-  { path: "/eventTracker", component: EventTracker },
-  { path: "/campusMap", component: CampusMap },
-  { path: "/leaderboard", component: LeaderBoard },
-  { path: "/clubProfile", component: ClubProfile },
-  { path: "/organizeEvent", component: OrganizeEvent },
-  { path: "/eventResult", component: EventResult },
-  { path: "/rankBoardMember", component: RankBoardMember },
-  { path: "/advisorProfile", component: AdvisorProfile },
+  { name: "Login", path: "/", component: Login },
+  {
+    path: "/main",
+    component: Main,
+    beforeEnter: before
+  },
+  {
+    name: "Profile",
+    path: "/profile",
+    beforeEnter: before,
+    meta: { guest: false },
+    component: Profile
+  },
+  {
+    name: "Explore",
+    path: "/explore",
+    component: Explore,
+    beforeEnter: before
+  },
+  { path: "/followings", component: Followings, beforeEnter: before },
+  { path: "/upcomingEvents", component: UpcomingEvents, beforeEnter: before },
+  { path: "/eventHistory", component: EventHistory, beforeEnter: before },
+  { path: "/eventTracker", component: EventTracker, beforeEnter: before },
+  { path: "/campusMap", component: CampusMap, beforeEnter: before },
+  { path: "/leaderboard", component: LeaderBoard, beforeEnter: before },
+  { path: "/clubProfile", component: ClubProfile, beforeEnter: before },
+  { path: "/organizeEvent", component: OrganizeEvent, beforeEnter: before },
+  { path: "/eventResult", component: EventResult, beforeEnter: before },
+  { path: "/rankBoardMember", component: RankBoardMember, beforeEnter: before },
+  { path: "/advisorProfile", component: AdvisorProfile, beforeEnter: before },
   { path: "/oemLogin", component: OemLogin },
-  { path: "/oemMain", component: OemMain }
+  { path: "/oemMain", component: OemMain, beforeEnter: before }
 ];

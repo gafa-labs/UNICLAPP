@@ -184,7 +184,7 @@
       </v-col>
       <v-col cols="12" md="8" class="pl-16">
         <v-row class="text-h5 mb-6 font-weight-bold"
-          >Your Club's Current Board Members</v-row
+          >Your Club's Current Events</v-row
         >
         <v-row>
           <v-data-table
