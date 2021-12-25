@@ -162,7 +162,7 @@
           <v-time-picker
             v-if="clock2"
             scrollable
-            :allowed-hours="allowedHours"
+            :allowed-hours="allowedSecondHours"
             v-model="newEvent.endTime"
             format="24hr"
             full-width
@@ -211,9 +211,16 @@
   </v-container>
 </template>
 <script>
+import axios from "axios";
 export default {
   data() {
     return {
+      header: {
+        headers: {
+          Authorization:
+            "Token " + JSON.parse(localStorage.getItem("user")).token
+        }
+      },
       isOnline: true,
       hasGE: true,
       error: false,
@@ -241,36 +248,7 @@ export default {
       date: new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
         .toISOString()
         .substr(0, 10),
-      upcomingEvents: [
-        {
-          name: "Event 1",
-          description: "Description of event 1",
-          location: "Location of event 1",
-          date: "01.01.2022",
-          time: "17.30"
-        },
-        {
-          name: "Event 2",
-          description: "Description of event 2",
-          location: "Location of event 2",
-          date: "01.02.2022",
-          time: "17.30"
-        },
-        {
-          name: "Event 3",
-          description: "Description of event 3",
-          location: "Location of event 3",
-          date: "01.03.2022",
-          time: "17.30"
-        },
-        {
-          name: "Event 4",
-          description: "Description of event 4",
-          location: "Location of event 4",
-          date: "01.04.2022",
-          time: "17.30"
-        }
-      ]
+      upcomingEvents: []
     };
   },
   methods: {
@@ -294,7 +272,27 @@ export default {
       }
       return true;
     },
+    allowedSecondHours(h) {
+      if (
+        this.newEvent.endDate == this.newEvent.startDate &&
+        this.newEvent.startTime
+      ) {
+        var timeArr = this.newEvent.startTime.split(":");
+        var hourInt = parseInt(timeArr[0]);
+        var start = new Date();
+        start.setHours(hourInt);
+        return h > start.getHours();
+      }
+      return true;
+    },
     removeEvent(event) {
+      console.log(event.id);
+      axios
+        .delete("http://localhost:8000/api/events/" + event.id + "/delete/")
+        .then(response => {
+          console.log(response.data);
+        })
+        .catch(e => console.log(e));
       for (var i = 0; i < this.upcomingEvents.length; i++) {
         if (this.upcomingEvents[i] === event) {
           this.upcomingEvents.splice(i, 1);
@@ -317,18 +315,48 @@ export default {
         name: this.newEvent.name,
         description: this.newEvent.description,
         ge_status: this.hasGE,
-        in_online: this.isOnline,
+        is_online: this.isOnline,
         start_datetime: start_datetime,
         end_datetime: end_datetime,
         location: this.newEvent.location
       };
-      console.log(event);
-
-      const object = this.newEvent;
-      this.upcomingEvents.push(object);
-      this.newEvent = {};
-      this.newEvent.date = this.today;
-      this.error = false;
+      var organizedEvent = {};
+      axios
+        .post("http://localhost:8000/api/events/create/", event, this.header)
+        .then(response => {
+          console.log(response.data);
+          organizedEvent = response.data;
+          organizedEvent.start_datetime = this.formattedDate(
+            organizedEvent.start_datetime
+          );
+          organizedEvent.end_datetime = this.formattedDate(
+            organizedEvent.end_datetime
+          );
+          organizedEvent.ge_status = organizedEvent.ge_status
+            ? "Awarded"
+            : "Not Awarded";
+          console.log(organizedEvent);
+          this.upcomingEvents.push(organizedEvent);
+          this.newEvent = {};
+          this.newEvent.date = this.today;
+          this.error = false;
+        })
+        .catch(e => console.log(e));
+    },
+    formattedDate(datetime) {
+      var date = new Date(datetime);
+      var hh = date.getHours().toLocaleString();
+      var min = date.getMinutes().toLocaleString();
+      if (min.length == 1) {
+        min = "0" + min;
+      }
+      var time = hh + ":" + min;
+      var dd = String(date.getDate()).padStart(2, "0");
+      var mm = String(date.getMonth() + 1).padStart(2, "0");
+      var yyyy = date.getFullYear();
+      date = dd + "/" + mm + "/" + yyyy;
+      date = date + "\n" + time;
+      return date;
     }
   },
   computed: {
@@ -356,14 +384,24 @@ export default {
           value: "location"
         },
         {
-          text: "Date",
+          text: "Start Date Time",
           align: "center",
-          value: "date"
+          value: "start_datetime"
         },
         {
-          text: "Time",
+          text: "End Date Time",
           align: "center",
-          value: "time"
+          value: "end_datetime"
+        },
+        {
+          text: "GE Status",
+          align: "center",
+          value: "ge_status"
+        },
+        {
+          text: "GE Points",
+          align: "center",
+          value: "ge_point"
         },
         {
           text: "",
@@ -372,6 +410,19 @@ export default {
         }
       ];
     }
+  },
+  created() {
+    axios
+      .get("http://localhost:8000/api/events/club-events/", this.header)
+      .then(response => {
+        this.upcomingEvents = response.data;
+        this.upcomingEvents.map(event => {
+          event.start_datetime = this.formattedDate(event.start_datetime);
+          event.end_datetime = this.formattedDate(event.end_datetime);
+          event.ge_status = event.ge_status ? "Awarded" : "Not Awarded";
+        });
+      })
+      .catch(e => console.log(e));
   }
 };
 </script>

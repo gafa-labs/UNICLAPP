@@ -162,9 +162,7 @@ export default {
           "http://127.0.0.1:8000/api/clubs/followings/follow/" + item.id + "/",
           this.header
         )
-        .then(response => {
-          console.log(response.data);
-        })
+        .then(response => {})
         .catch(e => console.log(e));
     },
     unfollow(item) {
@@ -177,9 +175,7 @@ export default {
             "/",
           this.header
         )
-        .then(response => {
-          console.log(response.data);
-        })
+        .then(response => {})
         .catch(e => console.log(e));
     },
     displayClubs(response) {

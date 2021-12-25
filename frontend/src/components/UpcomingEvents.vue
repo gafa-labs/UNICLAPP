@@ -57,6 +57,7 @@
                       style="position: absolute; bottom:20px;"
                       color="deep-orange lighten-1"
                       text
+                      @click="showDetail(event)"
                       >Details</v-btn
                     >
                   </v-col>
@@ -67,7 +68,7 @@
                       color="red lighten-1"
                       text
                       v-if="event.status === 'attending'"
-                      @click="event.status = 'not attending'"
+                      @click="cancelEnrollment(event)"
                       >Cancel</v-btn
                     >
                     <v-btn
@@ -75,7 +76,7 @@
                       color="green lighten-1"
                       text
                       v-if="event.status === 'not attending'"
-                      @click="event.status = 'attending'"
+                      @click="enrollEvent(event)"
                       >Attend</v-btn
                     >
                   </v-col>
@@ -148,7 +149,7 @@
                       color="green lighten-1"
                       text
                       v-if="event.status === 'not attending'"
-                      @click="event.status = 'attending'"
+                      @click="event.status = 'not attending'"
                       >Attend</v-btn
                     >
                   </v-col>
@@ -197,6 +198,12 @@ import axios from "axios";
 export default {
   data() {
     return {
+      header: {
+        headers: {
+          Authorization:
+            "Token " + JSON.parse(localStorage.getItem("user")).token
+        }
+      },
       detailDialog: false,
       showedEvent: {},
       search: "",
@@ -258,94 +265,35 @@ export default {
           status: "attending"
         }
       ],
-      allClubsEvents: [
-        {
-          club: "ACM Bilkent Club",
-          name: "event1",
-          description: "description2",
-          location: "location2",
-          date: "date2",
-          status: "attending"
-        },
-        {
-          club: "ACM Bilkent Club",
-          name: "event2",
-          description: "description2",
-          location: "location2",
-          date: "date2",
-          status: "not attending"
-        },
-        {
-          club: "ACM Bilkent Club",
-          name: "event3",
-          description: "description2",
-          location: "location2",
-          date: "date2",
-          status: "attending"
-        },
-        {
-          club: "ACM Bilkent Club",
-          name: "event4",
-          description: "description2",
-          location: "location2",
-          date: "date2",
-          status: "not attending"
-        },
-        {
-          club: "ACM Bilkent Club",
-          name: "event5",
-          description: "description2",
-          location: "location2",
-          date: "date2",
-          status: "not attending"
-        },
-        {
-          club: "ACM Bilkent Club",
-          name: "event6",
-          description: "description2",
-          location: "location2",
-          date: "date2",
-          status: "not attending"
-        },
-        {
-          club: "ACM Bilkent Club",
-          name: "event7",
-          description: "description2",
-          location: "location2",
-          date: "date2",
-          status: "not attending"
-        },
-        {
-          club: "ACM Bilkent Club",
-          name: "event8",
-          description: "description2",
-          location: "location2",
-          date: "date2",
-          status: "not attending"
-        },
-        {
-          club: "ACM Bilkent Club",
-          name: "event9",
-          description: "description2",
-          location: "location2",
-          date: "date2",
-          status: "not attending"
-        },
-        {
-          club: "ACM Bilkent Club",
-          name: "event10",
-          description: "description2",
-          location: "location2",
-          date: "date2",
-          status: "not attending"
-        }
-      ],
+      allClubsEvents: [],
       tab: null,
       sortElements: ["Followers", "Rate", "Events", "Participants"]
     };
   },
   methods: {
+    enrollEvent(event) {
+      event.status = "attending";
+      console.log(event);
+      axios
+        .get(
+          "http://127.0.0.1:8000/api/events/" + event.id + "/enroll/",
+          this.header
+        )
+        .then(response => {});
+    },
+    cancelEnrollment(event) {
+      event.status = "not attending";
+      axios
+        .get(
+          "http://127.0.0.1:8000/api/events/" +
+            event.id +
+            "/cancel-enrollment/",
+          this.header
+        )
+        .then(response => {});
+    },
     showDetail(item) {
+      this.detailDialog = true;
       this.showedEvent = item;
     },
     formatDate(item) {
@@ -361,39 +309,82 @@ export default {
       return events.filter(event => {
         return event.name.toLowerCase().includes(this.search.toLowerCase());
       });
+    },
+    displayEvents(response) {
+      response.map(event => {
+        if (event.is_online) {
+          event.location = "Zoom";
+        }
+        var eventDate = new Date(event.start_datetime);
+        var eventHour = eventDate.getHours().toString();
+        var eventMinutes = eventDate.getMinutes().toString();
+        if (eventMinutes.length == 1) {
+          eventMinutes = "0" + eventMinutes;
+        } else if (eventHour.length == 1) {
+          eventHour = "0" + eventHour;
+        }
+        var eventTime = eventHour + "." + eventMinutes;
+        var eventDay = eventDate.toLocaleDateString();
+        event.date = eventDay;
+        event.time = eventTime;
+        axios
+          .get("http://127.0.0.1:8000/api/clubs/" + event.club + "/")
+          .then(club => {
+            event.club = club.data.name;
+          })
+          .catch(er => console.log(er));
+        console.log(event);
+        const newEvent = JSON.parse(JSON.stringify(event));
+        this.allClubsEvents.push(newEvent);
+      });
     }
   },
   created() {
     axios
-      .get("http://127.0.0.1:8000/api/events/")
+      .get("http://127.0.0.1:8000/api/events/all-upcoming-events/", this.header)
       .then(response => {
-        response.data.map(event => {
-          if (event.is_online) {
-            event.location = "Zoom";
+        console.log(response.data);
+        this.displayEvents(response.data.all_upcoming_events);
+        var enrolled = response.data.enrolled_events;
+        this.allClubsEvents.forEach(event => {
+          if (enrolled.includes(event.id)) {
+            event.status = "attending";
+          } else {
+            event.status = "not attending";
           }
-          console.log(event);
-          var eventDate = new Date(event.datetime);
-          var eventHour = eventDate.getHours().toString();
-          var eventMinutes = eventDate.getMinutes().toString();
-          if (eventMinutes.length == 1) {
-            eventMinutes = "0" + eventMinutes;
-          } else if (eventHour.length == 1) {
-            eventHour = "0" + eventHour;
-          }
-          var eventTime = eventHour + "." + eventMinutes;
-          var eventDay = eventDate.toLocaleDateString();
-          event.date = eventDay;
-          event.time = eventTime;
-          axios
-            .get("http://127.0.0.1:8000/api/clubs/" + event.club + "/")
-            .then(club => {
-              event.club = club.data.name;
-            })
-            .catch(er => console.log(er));
         });
-        this.allClubsEvents = response.data;
       })
       .catch(e => console.log(e));
+    //   axios
+    //     .get("http://127.0.0.1:8000/api/events/")
+    //     .then(response => {
+    //       response.data.map(event => {
+    //         if (event.is_online) {
+    //           event.location = "Zoom";
+    //         }
+    //         var eventDate = new Date(event.start_datetime);
+    //         var eventHour = eventDate.getHours().toString();
+    //         var eventMinutes = eventDate.getMinutes().toString();
+    //         if (eventMinutes.length == 1) {
+    //           eventMinutes = "0" + eventMinutes;
+    //         } else if (eventHour.length == 1) {
+    //           eventHour = "0" + eventHour;
+    //         }
+    //         var eventTime = eventHour + "." + eventMinutes;
+    //         var eventDay = eventDate.toLocaleDateString();
+    //         event.date = eventDay;
+    //         event.time = eventTime;
+    //         axios
+    //           .get("http://127.0.0.1:8000/api/clubs/" + event.club + "/")
+    //           .then(club => {
+    //             event.club = club.data.name;
+    //           })
+    //           .catch(er => console.log(er));
+    //         console.log(event);
+    //       });
+    //       this.allClubsEvents = response.data;
+    //     })
+    //     .catch(e => console.log(e));
   }
 };
 </script>
