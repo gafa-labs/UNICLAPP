@@ -117,7 +117,9 @@
                   <v-row class="mt-6 text-h6"
                     >Location: {{ event.location }}</v-row
                   >
-                  <v-row class="mt-2 text-h6">Date: {{ event.date }}</v-row>
+                  <v-row class="mt-2 text-h6"
+                    >Date: {{ formatDate(event.date) }}</v-row
+                  >
                   <v-row class="mt-2 text-h6">Time: </v-row>
                 </v-card-text>
                 <v-row style="position: relative;">
@@ -126,6 +128,8 @@
                       style="position: absolute; bottom:20px;"
                       color="deep-orange lighten-1"
                       text
+                      @click="showDetail(event)"
+                      @click.stop="detailDialog = true"
                       >Details</v-btn
                     >
                   </v-col>
@@ -155,6 +159,37 @@
         </v-tab-item>
       </v-tabs-items>
     </v-card>
+    <v-dialog v-model="detailDialog" max-width="500">
+      <v-card>
+        <v-card-title class="text-h5 mb-3">
+          Event Result
+        </v-card-title>
+
+        <v-card-text class="pl-9">
+          <v-row class="text-subtitle-1"> Name: {{ showedEvent.name }} </v-row>
+          <v-row class="text-subtitle-1">
+            Description: {{ showedEvent.description }}
+          </v-row>
+          <v-row class="text-subtitle-1">
+            Location: {{ showedEvent.location }}
+          </v-row>
+          <v-row class="text-subtitle-1">
+            Date: {{ formatDate(showedEvent) }}
+          </v-row>
+          <v-row class="text-subtitle-1"> Rate: {{ showedEvent.rate }} </v-row>
+          <v-row class="text-subtitle-1">
+            Number of Participants: {{ showedEvent.participants }}
+          </v-row>
+        </v-card-text>
+
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="green darken-1" text @click="detailDialog = false">
+            Close
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>
 <script>
@@ -162,6 +197,8 @@ import axios from "axios";
 export default {
   data() {
     return {
+      detailDialog: false,
+      showedEvent: {},
       search: "",
       followingClubsEvents: [
         {
@@ -308,6 +345,15 @@ export default {
     };
   },
   methods: {
+    showDetail(item) {
+      this.showedEvent = item;
+    },
+    formatDate(item) {
+      if (item.date) {
+        return item.date.toLocaleString();
+      }
+      return "";
+    },
     searched(events) {
       if (this.search === "") {
         return events;
