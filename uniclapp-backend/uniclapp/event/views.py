@@ -1,3 +1,4 @@
+from django.db.models.query import QuerySet
 from rest_framework import generics, mixins, status, viewsets
 from rest_framework.response import Response
 from event import serializers
@@ -72,34 +73,6 @@ class UpcomingEventAPIView(generics.ListAPIView):
                 serializer = self.get_serializer(
                     all_upcoming_events, many=True)
                 data = serializer.data
-
-                enrolled_events = utils.get_student_enrolled_upcoming_events(
-                    student.id)
-                queryset = Event.objects.filter(id__in=enrolled_events)
-                serializer = self.get_serializer(queryset)
-                response_data["all_upcoming_events"] = data
-                response_data["enrolled_events"] = enrolled_events
-                """
-                upcoming_events = [
-                    x for x in Event.objects.all() if not x.is_past]
-                serializer = self.get_serializer(upcoming_events, many=True)
-                """
-                return Response(response_data)
-
-
-class AUpcomingEventAPIView(generics.ListAPIView):
-    serializer_class = serializers.BasicEventSerializer
-    queryset = Event.objects.all()
-
-    def get(self, request):
-        user = request.user
-        if user:
-            student = user.student
-            if student:
-                response_data = {}
-                clubs_upcoming_events = utils.get_student_clubs_upcoming_events(
-                    student.id)
-                print(clubs_upcoming_events)
 
                 enrolled_events = utils.get_student_enrolled_upcoming_events(
                     student.id)
@@ -237,3 +210,13 @@ class EventTrackerAPIView(generics.ListAPIView):
             queryset = Event.objects.filter(id__in=upcoming_events)
             serializer = self.get_serializer(queryset, many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class OEMEventAPIView(generics.ListAPIView):
+    serializer_class = serializers.EventSerializer
+    queryset = Event.objects.exclude(event_status="past")
+
+
+class OEMConfirmationAPIView(generics.UpdateAPIView):
+    serializer_class = serializers.EventConfirmationSerializer
+    queryset = Event.objects.all()

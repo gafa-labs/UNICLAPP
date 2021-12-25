@@ -48,3 +48,9 @@ class EventTrackerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Event
         fields = "__all__"
+
+
+class EventConfirmationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Event
+        fields = ("event_status",)
