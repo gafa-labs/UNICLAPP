@@ -3,6 +3,7 @@ from rest_framework import generics, mixins, status, viewsets
 from rest_framework.response import Response
 from event import serializers
 from event.models import Event
+from event import utils
 
 
 class EventAPIView(generics.ListAPIView):
@@ -16,6 +17,11 @@ class EventDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
     lookup_field = "pk"
 
 
+class EventCreateAPIView(generics.CreateAPIView):
+    serializer_class = serializers.EventSerializer
+    queryset = Event.objects.all()
+
+
 class PastEventAPIView(generics.ListAPIView):
     serializer_class = serializers.EventSerializer
     queryset = Event.objects.all()
@@ -27,13 +33,25 @@ class PastEventAPIView(generics.ListAPIView):
 
 
 class UpcomingEventAPIView(generics.ListAPIView):
-    serializer_class = serializers.EventSerializer
+    serializer_class = serializers.BasicEventSerializer
     queryset = Event.objects.all()
 
+    # TODO
+
     def get(self, request):
-        upcoming_events = [x for x in Event.objects.all() if not x.is_past]
-        serializer = self.get_serializer(upcoming_events, many=True)
-        return Response(serializer.data)
+        user = request.user
+        if user:
+            student = user.student
+            if student:
+                enrolled_events = utils.get_student_enrolled_upcoming_events(
+                    student.id)
+                queryset = Event.objects.filter(id__in=enrolled_events)
+                serializer = self.get_serializer(queryset)
+
+                upcoming_events = [
+                    x for x in Event.objects.all() if not x.is_past]
+                serializer = self.get_serializer(upcoming_events, many=True)
+                return Response(serializer.data)
 
 
 class PendingEventAPIView(generics.ListAPIView):

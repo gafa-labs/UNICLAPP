@@ -7,6 +7,8 @@ urlpatterns = [
     path(
         'events/<int:pk>/', views.EventDetailAPIView.as_view(), name='event'),
     path(
+        'events/create/', views.EventCreateAPIView.as_view(), name='event-create'),
+    path(
         'events/past/', views.PastEventAPIView.as_view(), name='past-events'),
     path(
         'events/upcoming/', views.UpcomingEventAPIView.as_view(), name='upcoming-events'),

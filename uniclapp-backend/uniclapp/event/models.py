@@ -11,14 +11,14 @@ class Event(models.Model):
     event_status = models.TextField(choices=enums.EventStatus.choices)
     club = models.ForeignKey(
         "club.Club", on_delete=models.CASCADE, related_name="%(class)s_events")
-    about = models.TextField()
+    description = models.TextField()
     ge_status = models.BooleanField(default=False)
     ge_point = models.IntegerField(default="10")
     duration = models.FloatField(default=0)
     capacity = models.IntegerField(default=0)
     is_online = models.BooleanField(default=False)
     zoom_link = models.URLField(blank=True)
-    building = models.ForeignKey(
+    location = models.ForeignKey(
         "place.Building", on_delete=SET_NULL, blank=True, null=True)
     start_datetime = models.DateTimeField()
     end_datetime = models.DateTimeField()
@@ -41,9 +41,9 @@ class Event(models.Model):
 
 
 class EventEnrollment(models.Model):
-    student = models.OneToOneField(
+    student = models.ForeignKey(
         "accounts.Student", on_delete=models.CASCADE, related_name="enrolled_students")
-    event = models.OneToOneField(
+    event = models.ForeignKey(
         Event, on_delete=models.CASCADE, related_name="enrolled_events")
     created = models.DateTimeField(auto_now_add=True)
 
