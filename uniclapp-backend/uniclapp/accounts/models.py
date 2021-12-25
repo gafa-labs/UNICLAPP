@@ -8,6 +8,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from rest_framework.authtoken.models import Token
 from django.conf import settings
+import re
 
 
 class UserManager(BaseUserManager):
@@ -76,6 +77,9 @@ class Student(models.Model):
     def __str__(self):
         return self.user.full_name
 
+    def validateHesCode(self):
+        return len(re.findall("[A-Q][0-9][A-Q][0-9]-[0-9]{4}-[0-9]{2}", self.hes_code)) == 1
+
 
 class BoardMember(models.Model):
     student = models.OneToOneField(
@@ -90,6 +94,8 @@ class BoardMember(models.Model):
 class BoardChairman(models.Model):
     student = models.OneToOneField(
         Student, on_delete=models.CASCADE, related_name="board_chairman")
+    club = models.OneToOneField(
+        "club.Club", on_delete=models.CASCADE, related_name="chairman", null=True, blank=True)
 
     def __str__(self):
         return self.student.user.full_name

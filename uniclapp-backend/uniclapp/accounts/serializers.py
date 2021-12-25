@@ -1,9 +1,16 @@
 from django.core.exceptions import ValidationError
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
-from accounts.models import Student, OEM
+from accounts.models import Student, OEM, BoardMember
+from club.serializers import ClubSerializer
 
 User = get_user_model()
+
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ["email", "full_name"]
 
 
 class OEMSerializer(serializers.ModelSerializer):
@@ -65,13 +72,23 @@ class StudentRegisterSerializer(serializers.ModelSerializer):
 
 
 class StudentSerializer(serializers.ModelSerializer):
+    user = UserSerializer(read_only=True)
 
     class Meta:
         model = Student
-        fields = ["student_id", "department", "hes_code"]
+        fields = ["student_id", "department", "hes_code", "user"]
 
 
 class LoginSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ["email", "password"]
+
+
+class BoardMemberSerializer(serializers.ModelSerializer):
+    student = StudentSerializer(read_only=True)
+    club = ClubSerializer(read_only=True)
+
+    class Meta:
+        model = BoardMember
+        fields = "__all__"

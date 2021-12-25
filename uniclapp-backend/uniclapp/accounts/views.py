@@ -1,12 +1,10 @@
 from rest_framework import generics
-from rest_framework import permissions
-from rest_framework import response
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 from accounts import serializers
-from accounts.serializers import LoginSerializer, StudentRegisterSerializer, OEMSerializer
+from accounts.serializers import LoginSerializer, StudentRegisterSerializer, OEMSerializer, BoardMemberSerializer
 from django.contrib.auth import login, logout
-from rest_framework import mixins, status
+from rest_framework import status
 from rest_framework.authtoken.models import Token
 from accounts import models
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -89,7 +87,7 @@ class LogoutAPIView(generics.RetrieveAPIView):
 
 class StudentProfileAPIView(generics.RetrieveAPIView):
     serializer_class = serializers.StudentSerializer
-    query_set = models.Student.objects.all()
+    queryset = models.Student.objects.all()
 
     def get(self, request):
         user = request.user
@@ -100,3 +98,45 @@ class StudentProfileAPIView(generics.RetrieveAPIView):
             data["name"] = user.full_name
             data["email"] = user.email
             return Response(data)
+
+
+class BoardMemberAPIView(generics.ListAPIView):
+    serializer_class = BoardMemberSerializer
+    queryset = models.BoardMember.objects.all()
+
+
+class PromoteStudentAPIView(generics.CreateAPIView):
+    serializer_class = BoardMemberSerializer
+    queryset = models.BoardMember.objects.all()
+
+    def post(self, request):
+        user = request.user
+        if user:
+            student = user.student
+            if student:
+                board_chairman = student.board_chairman
+                if board_chairman:
+                    club = board_chairman.club
+                    data = request.data
+                    full_name = data["student_name"]
+                    student_id = data["student_id"]
+                    email = data["email"]
+                    user = models.User.objects.get(
+                        email=email, full_name=full_name)
+                    if user:
+                        student = user.student
+                        if student:
+                            candidate_student = models.Student.objects.get(
+                                user=user, student_id=student_id)
+                            if student == candidate_student:
+                                if not models.BoardMember.objects.filter(student=student, club=club):
+                                    boardmember = models.BoardMember.objects.get_or_create(
+                                        student=student, club=club)
+                                    return Response(status=status.HTTP_201_CREATED)
+                        return Response(status=status.HTTP_400_BAD_REQUEST)
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+
+class DemoteStudentAPIView(generics.DestroyAPIView):
+    serializer_class = BoardMemberSerializer
+    queryset = models.BoardMember.objects.all()
