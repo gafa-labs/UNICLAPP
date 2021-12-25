@@ -199,6 +199,7 @@
                 color="red lighten-1"
                 rounded
                 small
+                v-if="item.event_status != 'Past'"
                 @click="removeEvent(item)"
                 >Remove
                 <v-icon right>mdi-close-outline</v-icon>
@@ -371,42 +372,56 @@ export default {
         {
           text: "Name",
           align: "center",
-          value: "name"
+          value: "name",
+          sortable: false
         },
         {
           text: "Description",
           align: "center",
-          value: "description"
+          value: "description",
+          sortable: false
         },
         {
           text: "Location",
           align: "center",
-          value: "location"
+          value: "location",
+          sortable: false
         },
         {
           text: "Start Date Time",
           align: "center",
-          value: "start_datetime"
+          value: "start_datetime",
+          sortable: false
         },
         {
           text: "End Date Time",
           align: "center",
-          value: "end_datetime"
+          value: "end_datetime",
+          sortable: false
         },
         {
           text: "GE Status",
           align: "center",
-          value: "ge_status"
+          value: "ge_status",
+          sortable: false
         },
         {
           text: "GE Points",
           align: "center",
-          value: "ge_point"
+          value: "ge_point",
+          sortable: false
+        },
+        {
+          text: "Status",
+          align: "center",
+          value: "event_status",
+          sortable: false
         },
         {
           text: "",
           align: "center",
-          value: "change"
+          value: "change",
+          sortable: false
         }
       ];
     }
@@ -415,7 +430,13 @@ export default {
     axios
       .get("http://localhost:8000/api/events/club-events/", this.header)
       .then(response => {
+        response.data.forEach(event => {
+          event.event_status =
+            event.event_status.charAt(0).toUpperCase() +
+            event.event_status.slice(1);
+        });
         this.upcomingEvents = response.data;
+        console.log(response.data);
         this.upcomingEvents.map(event => {
           event.start_datetime = this.formattedDate(event.start_datetime);
           event.end_datetime = this.formattedDate(event.end_datetime);
