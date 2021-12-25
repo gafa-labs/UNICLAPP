@@ -113,7 +113,16 @@ export default {
         },
         {
           text: "Category",
-          value: "category"
+          value: "category",
+          filter: value => {
+            var check = false;
+            this.selected.forEach(item => {
+              if (value === item.toLowerCase()) {
+                check = true;
+              }
+            });
+            return check;
+          }
         },
         {
           text: "Followers",

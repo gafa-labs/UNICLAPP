@@ -105,18 +105,16 @@ export default {
         },
         {
           text: "Category",
-          value: "category"
-          // filter: value => {
-          //   var arr = value[0].split(",");
-          //   console.log(value);
-          //   var check = false;
-          //   this.selected.forEach(item => {
-          //     if (arr.includes(item)) {
-          //       check = true;
-          //     }
-          //   });
-          //   return check;
-          // }
+          value: "category",
+          filter: value => {
+            var check = false;
+            this.selected.forEach(item => {
+              if (value === item.toLowerCase()) {
+                check = true;
+              }
+            });
+            return check;
+          }
         },
         {
           text: "Followers",
