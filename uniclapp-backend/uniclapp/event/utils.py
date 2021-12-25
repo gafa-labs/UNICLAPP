@@ -4,7 +4,6 @@ from event.models import Event, EventEnrollment
 
 
 def enroll_in_event(student_id, event_id):
-
     student = Student.objects.get(id=student_id)
     event = Event.objects.get(id=event_id)
     if student and event:
@@ -21,3 +20,16 @@ def cancell_enrollment(student_id, event_id):
         student=student, event=event).first()
     if enrollment:
         enrollment.delete()
+
+
+def get_student_enrolled_upcoming_events(student_id):
+    student = Student.objects.get(id=student_id)
+    if student:
+        all_enrollments = EventEnrollment.objects.filter(
+            student=student, is_past=False).all()
+        all_enrollments = list(all_enrollments)
+        events = []
+        for instance in all_enrollments:
+            events.append(instance.event.id)
+        return events
+    return None
