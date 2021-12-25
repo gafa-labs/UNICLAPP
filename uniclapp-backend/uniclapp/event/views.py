@@ -1,10 +1,8 @@
-from django.shortcuts import render
 from rest_framework import generics, mixins, status, viewsets
 from rest_framework.response import Response
 from event import serializers
 from event.models import Event
 from event import utils
-from itertools import chain
 
 
 class EventAPIView(generics.ListAPIView):
@@ -120,7 +118,7 @@ class ClubEventsViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.R
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class ClubUpcomingEventAPIView(generics.RetrieveAPIView):
+class ClubUpcomingEventAPIView(generics.RetrieveDestroyAPIView):
     serializer_class = serializers.ClubEventSerializer
     queryset = Event.objects.all()
 
@@ -134,4 +132,16 @@ class ClubUpcomingEventAPIView(generics.RetrieveAPIView):
                 queryset = Event.objects.filter(club=club)
                 serializer = self.get_serializer(queryset, many=True)
                 return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+
+class EventDestroyAPIView(generics.DestroyAPIView):
+    serializer_class = serializers.ClubEventSerializer
+    queryset = Event.objects.all()
+
+    def delete(self, request, pk):
+        event = Event.objects.get(pk=pk)
+        if event:
+            event.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
         return Response(status=status.HTTP_404_NOT_FOUND)
