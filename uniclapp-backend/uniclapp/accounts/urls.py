@@ -3,7 +3,10 @@ from accounts import views
 
 
 urlpatterns = [
-    path('register/', views.StudentRegisterAPIView.as_view(), name='register'),
+    path('register/oem/', views.OEMRegisterAPIView.as_view(),
+         name='user-register'),
+    path('register/student/', views.StudentRegisterAPIView.as_view(),
+         name='student-register'),
     path('login/', views.LoginAPIView.as_view(), name='login'),
     path('logout/', views.LogoutAPIView.as_view(), name='logout'),
     path('accounts/students/<int:pk>/',

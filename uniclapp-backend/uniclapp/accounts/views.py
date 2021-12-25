@@ -4,7 +4,7 @@ from rest_framework import response
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 from accounts import serializers
-from accounts.serializers import LoginSerializer, StudentRegisterSerializer
+from accounts.serializers import LoginSerializer, StudentRegisterSerializer, OEMSerializer
 from django.contrib.auth import login, logout
 from rest_framework import mixins, status
 from rest_framework.authtoken.models import Token
@@ -22,6 +22,25 @@ class StudentRegisterAPIView(generics.CreateAPIView):
         if serializer.is_valid():
             user = serializer.save()
             data["response"] = "successfully registered a new student"
+            data["email"] = user.email
+            data["full_name"] = user.full_name
+            token = Token.objects.get_or_create(user=user)[0].key
+            data["token"] = token
+        else:
+            raise ValidationError()
+        return Response(data)
+
+
+class OEMRegisterAPIView(generics.CreateAPIView):
+    serializer_class = OEMSerializer
+    permission_classes = (AllowAny,)
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        data = {}
+        if serializer.is_valid():
+            user = serializer.save()
+            data["response"] = "successfully registered a new user"
             data["email"] = user.email
             data["full_name"] = user.full_name
             token = Token.objects.get_or_create(user=user)[0].key

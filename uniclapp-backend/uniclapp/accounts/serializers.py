@@ -1,15 +1,26 @@
 from django.core.exceptions import ValidationError
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
-from accounts.models import Student
+from accounts.models import Student, OEM
 
 User = get_user_model()
 
 
-class UserSerializer(serializers.ModelSerializer):
+class OEMSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('id', 'email', "full_name")
+        fields = ['email', 'password', "full_name", ]
+        extra_kwargs = {'password': {'write_only': True}}
+
+    def save(self):
+        if not User.objects.filter(email=self.validated_data["email"], password=self.validated_data["password"]).exists():
+            user = User.objects.create_user(
+                email=self.validated_data["email"], password=self.validated_data["password"],)
+            user.full_name = self.validated_data["full_name"]
+            user.save()
+            oem = OEM.objects.create(user=user)
+            return user
+        return ValidationError()
 
 
 class StudentRegisterSerializer(serializers.ModelSerializer):
