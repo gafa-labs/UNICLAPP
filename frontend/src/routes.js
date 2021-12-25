@@ -8,6 +8,13 @@ import EventHistory from "./components/EventHistory";
 import EventTracker from "./components/EventTracker";
 import CampusMap from "./components/CampusMap";
 import LeaderBoard from "./components/LeaderBoard";
+import ClubProfile from "./components/ClubProfile";
+import OrganizeEvent from "./components/OrganizeEvent";
+import EventResult from "./components/EventResult";
+import RankBoardMember from "./components/RankBoardMember";
+import AdvisorProfile from "./components/AdvisorProfile";
+import OemLogin from "./components/OemLogin"
+import OemMain from "./components/OemMain"
 
 export const routes = [
   { path: "/", component: Login },
@@ -19,5 +26,12 @@ export const routes = [
   { path: "/eventHistory", component: EventHistory },
   { path: "/eventTracker", component: EventTracker },
   { path: "/campusMap", component: CampusMap },
-  { path: "/leaderboard", component: LeaderBoard }
+  { path: "/leaderboard", component: LeaderBoard },
+  { path: "/clubProfile", component: ClubProfile },
+  { path: "/organizeEvent", component: OrganizeEvent },
+  { path: "/eventResult", component: EventResult },
+  { path: "/rankBoardMember", component: RankBoardMember },
+  { path: "/advisorProfile", component: AdvisorProfile },
+  { path: "/oemLogin", component: OemLogin },
+  { path: "/oemMain", component: OemMain }
 ];

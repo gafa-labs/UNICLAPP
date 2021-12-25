@@ -20,7 +20,7 @@
                         prepend-icon="mdi-email"
                         v-model="information.email"
                         type="text"
-                        color="light-blue accent-2"
+                        color="light-blue darken-3"
                       />
                       <v-text-field
                         id="password"
@@ -45,6 +45,7 @@
                       @click="goToMainPage"
                       color="light-blue darken-3"
                       dark
+                      rounded
                       >SIGN IN</v-btn
                     >
                   </div>
@@ -64,7 +65,7 @@
                       rounded
                       text
                       @click="step++"
-                      x-large
+                      large
                     >
                       Sign Up
                     </v-btn>
@@ -77,7 +78,7 @@
                 <v-col cols="12" md="8">
                   <h1
                     v-color="this.$vuetify.theme.themes.dark.darkColor"
-                    class="text-center display-2 mt-5"
+                    class="text-center light-blue--text text--darken-3 display-2 mt-5"
                   >
                     Sign up to UNICLAPP
                   </h1>
@@ -91,7 +92,7 @@
                             v-model="register.full_name"
                             prepend-icon="mdi-account"
                             type="text"
-                            color="light-blue accent-2"
+                            color="light-blue darken-3"
                           />
                           <v-text-field
                             id="id"
@@ -99,7 +100,7 @@
                             v-model="register.studentid"
                             prepend-icon="mdi-id-card"
                             type="text"
-                            color="light-blue accent-2"
+                            color="light-blue darken-3"
                           />
                           <v-text-field
                             id="department"
@@ -107,7 +108,7 @@
                             v-model="register.department"
                             prepend-icon="mdi-school"
                             type="text"
-                            color="light-blue accent-2"
+                            color="light-blue darken-3"
                           ></v-text-field>
                         </v-form>
                       </v-card-text>
@@ -122,7 +123,7 @@
                             v-model="register.email"
                             prepend-icon="mdi-email"
                             type="text"
-                            color="light-blue accent-2"
+                            color="light-blue darken-3"
                           />
                           <v-text-field
                             id="password"
@@ -134,7 +135,7 @@
                               showPassword ? 'mdi-eye' : 'mdi-eye-off'
                             "
                             :type="showPassword ? 'text' : 'password'"
-                            color="light-blue accent-2"
+                            color="light-blue darken-3"
                             @click:append="showPassword = !showPassword"
                           ></v-text-field>
                         </v-form>
@@ -142,14 +143,10 @@
                     </v-col>
                   </v-row>
                   <div class="text-center mb-10">
-<<<<<<< HEAD
                     <v-btn
                       @click="registerStudent"
                       color="light-blue darken-3"
                       dark
-=======
-                    <v-btn rounded color="light-blue accent-2" dark v-color:
->>>>>>> parent of 8e4f35b (Merge branch 'unstable-frontendV2' into unstable-backendV2)
                       >SIGN UP</v-btn
                     >
                   </div>
@@ -169,7 +166,7 @@
                       rounded
                       text
                       @click="step--"
-                      x-large
+                      large
                     >
                       Sign In
                     </v-btn>
