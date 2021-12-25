@@ -280,7 +280,7 @@ export default {
         )
         .then(response => {});
     },
-    cancelEnrollment(event) {
+    async cancelEnrollment(event) {
       event.status = "not attending";
       axios
         .get(
