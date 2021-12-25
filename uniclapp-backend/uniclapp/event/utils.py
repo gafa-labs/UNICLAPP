@@ -54,3 +54,32 @@ def get_student_clubs_upcoming_events(student_id):
                 event_list.append(club.events.all())
         return event_list
     return None
+
+
+def get_student_enrolled_all_events(student_id):
+    student = Student.objects.get(id=student_id)
+    if student:
+        evaluation_queryset = student.post.evaluations.all()
+        events = []
+        for evaluation in list(evaluation_queryset):
+            events.append(evaluation.event)
+        return events
+
+    return None
+
+
+def calculate_average_event_rate(event_id):
+    event = Event.objects.get(id=event_id)
+    if event:
+        sum = 0
+        number_of_students = 0
+        evaluations = event.enrolled_students.all()
+        for evaluation in list(evaluations):
+            rate = evaluation.rate
+            if rate > 0:
+                sum += rate
+                number_of_students += 1
+        if number_of_students != 0:
+            average = sum / number_of_students
+            event.rate = average
+            event.save()

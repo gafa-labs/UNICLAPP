@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from evaluation.models import Evaluation
 from rest_framework import generics
-from evaluation.serializers import EvaluationSerializer
+from evaluation.serializers import EvaluationSerializer, AdvancedEvaluationSerializer
 from event.models import Event
 from rest_framework.response import Response
 from rest_framework import status
@@ -31,5 +31,14 @@ class EvaluationCreateAPIView(generics.CreateAPIView):
 
 
 class EvaluationListAPIView(generics.ListAPIView):
-    serializer_class = EvaluationSerializer
+    serializer_class = AdvancedEvaluationSerializer
     queryset = Evaluation.objects.all()
+
+    def list(self, request):
+        user = request.user
+        if user:
+            student = user.student
+            if student:
+                evaluations = student.post_evaluations.all()
+                serializer = self.get_serializer(evaluations, many=True)
+                return Response(serializer.data, status=status.HTTP_200_OK)

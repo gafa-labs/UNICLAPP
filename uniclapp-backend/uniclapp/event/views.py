@@ -184,3 +184,41 @@ class EventCancelEnrollmentAPIView(generics.RetrieveAPIView):
                         return(utils.cancell_enrollment(student.id, event.id))
                     else:
                         return Response(status=status.HTTP_404_NOT_FOUND)
+
+
+class EventHistoryAPIView(generics.ListAPIView):
+    serializer_class = serializers.EventHistorySerializer
+    queryset = Event.objects.all()
+
+    def get(self, request):
+        user = request.user
+        if user:
+            student = user.student
+            if student:
+                event_enrollments = student.enrolled_events.all()
+                serializer = self.get_serializer(event_enrollments, many=True)
+                data = serializer.data
+                return Response(serializer.data)
+
+
+class RateEventAPIView(generics.UpdateAPIView):
+    serializer_class = serializers.EventEnrollmentSerializer
+    queryset = Event.objects.all()
+
+    def put(self, request, pk):
+        user = request.user
+        if user:
+            student = user.student
+            if student:
+                event = Event.objects.get(pk=pk)
+                if not EventEnrollment.objects.filter(event=event, student=student).exists():
+                    return Response(status=status.HTTP_404_NOT_FOUND)
+                event_enrollment = EventEnrollment.objects.get(
+                    event=event, student=student)
+                data = request.data
+                event_enrollment.rate = data["rate"]
+                event_enrollment.save()
+                data["student"] = student.id
+                data["event"] = event.id
+                utils.calculate_average_event_rate(event.id)
+                return Response(data, status=status.HTTP_201_CREATED)
