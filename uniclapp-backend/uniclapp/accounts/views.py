@@ -100,11 +100,6 @@ class StudentProfileAPIView(generics.RetrieveAPIView):
             return Response(data)
 
 
-class BoardMemberAPIView(generics.ListAPIView):
-    serializer_class = BoardMemberSerializer
-    queryset = models.BoardMember.objects.all()
-
-
 class PromoteStudentAPIView(generics.CreateAPIView):
     serializer_class = BoardMemberSerializer
     queryset = models.BoardMember.objects.all()

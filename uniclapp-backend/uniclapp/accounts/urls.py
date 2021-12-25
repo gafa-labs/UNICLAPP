@@ -13,8 +13,6 @@ urlpatterns = [
          views.StudentProfileAPIView.as_view(), name='student-profile'),
     path('profiles/student/', views.StudentProfileAPIView.as_view(),
          name='student_profile'),
-    path('accounts/boardmembers/', views.BoardMemberAPIView.as_view(),
-         name='boardmembers'),
     path('accounts/rank/promote-student/', views.PromoteStudentAPIView.as_view(),
          name='promote-student'),
     path('accounts/rank/demote-boardmember/<int:pk>/', views.DemoteStudentAPIView.as_view(),

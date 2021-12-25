@@ -5,6 +5,8 @@ from club.models import Club, ClubFollowing
 from club.serializers import ClubSerializer
 from club import utils
 from club.serializers import BasicClubSerializer, ClubFollowingSerializer, ClubLeaderBoardSerializer
+from accounts.serializers import BoardMemberSerializer
+from accounts.models import BoardMember
 
 
 class ClubListAPIView(generics.ListAPIView):
@@ -95,3 +97,21 @@ class ClubFollowingsUnfollowAPIView(generics.RetrieveAPIView):
 class LeaderBoardAPIView(generics.ListAPIView):
     serializer_class = ClubLeaderBoardSerializer
     queryset = Club.objects.all()
+
+
+class ClubBoardMemberListAPIView(generics.ListAPIView):
+    serializer_class = BoardMemberSerializer
+    queryset = BoardMember.objects.all()
+
+    def get(self, request):
+        user = request.user
+        if user:
+            student = user.student
+            if student:
+                boardchairman = student.board_chairman
+                if boardchairman:
+                    club = boardchairman.club
+                    board_members = club.boardmembers.all()
+                    serializer = self.get_serializer(board_members, many=True)
+                    return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_404_NOT_FOUND)
