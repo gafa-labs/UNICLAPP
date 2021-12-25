@@ -65,6 +65,7 @@ export default {
         .post("http://localhost:8000/api/login/", this.information)
         .then(response => {
           localStorage.setItem("user", JSON.stringify(response.data));
+          localStorage.setItem("OEMStatus", true);
           this.$router.push("/oemMain");
         })
         .catch(e => {

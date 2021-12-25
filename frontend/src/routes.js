@@ -24,6 +24,14 @@ const before = function(to, from, next) {
   }
 };
 
+const beforeOem = function(to, from, next) {
+  if (localStorage.getItem("OEMStatus") === "true") {
+    next();
+  } else {
+    next("/");
+  }
+};
+
 export const routes = [
   { name: "Login", path: "/", component: Login },
   {
@@ -56,5 +64,5 @@ export const routes = [
   { path: "/rankBoardMember", component: RankBoardMember, beforeEnter: before },
   { path: "/advisorProfile", component: AdvisorProfile, beforeEnter: before },
   { path: "/oemLogin", component: OemLogin },
-  { path: "/oemMain", component: OemMain, beforeEnter: before }
+  { path: "/oemMain", component: OemMain, beforeEnter: beforeOem }
 ];
