@@ -51,4 +51,4 @@ class EventEnrollment(models.Model):
         ordering = ["-created"]
 
     def __str__(self):
-        return f'{self.student_student.id} - {self.event.name}'
+        return f'{self.student.student_id} - {self.event.name}'
