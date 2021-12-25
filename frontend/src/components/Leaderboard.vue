@@ -9,8 +9,8 @@
       </v-col>
       <v-col cols="12" sm="11">
         <v-chip-group mandatory active-class="primary--text">
-          <v-chip v-for="el in sortElements" :key="el" @click="sort(el)">{{
-            el
+          <v-chip v-for="el in sortElements" :key="el.key" @click="sort(el)">{{
+            el.value
           }}</v-chip>
         </v-chip-group>
       </v-col>
@@ -28,70 +28,38 @@
   </v-container>
 </template>
 <script>
+import axios from "axios";
 export default {
   data() {
     return {
+      header: {
+        headers: {
+          Authorization:
+            "Token " + JSON.parse(localStorage.getItem("user")).token
+        }
+      },
       sortBy: "followers",
       search: "",
-      sortElements: ["Followers", "Rate", "Events", "Participants"],
-      clubs: [
+      sortElements: [
         {
-          name: "ACM Bilkent Club",
-          category: ["Business,Software,Science"],
-          followers: "1545",
-          rate: "4.5",
-          events: 10,
-          participants: 123
+          key: "number_of_followers",
+          value: "Followers"
         },
         {
-          name: "Management and Economics Society",
-          category: ["Business"],
-          followers: "6889",
-          rate: "4.6",
-          events: 11,
-          participants: 125
+          key: "rate",
+          value: "Rate"
         },
         {
-          name: "Astronomy Society",
-          category: ["Science,Hobbies"],
-          followers: "1276",
-          rate: "4.7",
-          events: 12,
-          participants: 143
+          key: "number_of_events",
+          value: "Events"
         },
         {
-          name: "Young Entrepreneur Society",
-          category: ["Entertainment,Business"],
-          followers: "5642",
-          rate: "4.5",
-          events: 9,
-          participants: 183
-        },
-        {
-          name: "E-Sport Society",
-          category: ["Entertainment,Hobbies"],
-          followers: "2036",
-          rate: "4.2",
-          events: 21,
-          participants: 223
-        },
-        {
-          name: "Science Fiction and Fantasy Society",
-          category: ["Entertainment,Hobbies"],
-          followers: "891",
-          rate: "4.3",
-          events: 15,
-          participants: 23
-        },
-        {
-          name: "Operational Research Club",
-          category: ["Business"],
-          followers: "1149",
-          rate: "4.0",
-          events: 17,
-          participants: 423
+          key: "number_of_total_participants",
+          value: "Participants"
         }
-      ]
+      ],
+      //sortElements: ["Followers", "Rate", "Events", "Participants"],
+      clubs: []
     };
   },
   computed: {
@@ -110,7 +78,7 @@ export default {
         },
         {
           text: "Followers",
-          value: "followers",
+          value: "number_of_followers",
           sortable: false
         },
         {
@@ -121,12 +89,12 @@ export default {
         {
           text: "Total Events",
           sortable: false,
-          value: "events"
+          value: "number_of_events"
         },
         {
           text: "Total Participants",
           sortable: false,
-          value: "participants"
+          value: "number_of_total_participants"
         }
       ];
     }
@@ -139,9 +107,18 @@ export default {
       item.status = "unfollowing";
     },
     sort(value) {
-      value = value.toLowerCase();
-      this.sortBy = value;
+      console.log(value);
+      //value = value.toLowerCase();
+      this.sortBy = value.key;
     }
+  },
+  created() {
+    axios
+      .get("http://127.0.0.1:8000/api/clubs/leaderboard/", this.header)
+      .then(response => {
+        this.clubs = response.data;
+      })
+      .catch(e => console.log(e));
   }
 };
 </script>
