@@ -1,5 +1,6 @@
 from rest_framework import generics
 from rest_framework import permissions
+from rest_framework import response
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 from accounts import serializers
@@ -26,7 +27,7 @@ class StudentRegisterAPIView(generics.CreateAPIView):
             token = Token.objects.get_or_create(user=user)[0].key
             data["token"] = token
         else:
-            data = serializer.errors
+            raise ValidationError()
         return Response(data)
 
 

@@ -2,8 +2,7 @@ from django.db import models
 
 
 class EventStatus(models.TextChoices):
-    draft = "draft",
-    active = "active",
+    pending = "pending",
     past = "past",
     upcoming = "upcoming",
     rejected = "rejected",

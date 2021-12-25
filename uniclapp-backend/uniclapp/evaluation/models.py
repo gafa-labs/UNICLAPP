@@ -5,15 +5,14 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 class Evaluation(models.Model):
     student = models.OneToOneField(
         "accounts.Student", on_delete=models.CASCADE, related_name="evaluations")
-    content = models.TextField()
-    rate = models.IntegerField(default=0, validators=[
+    rate = models.IntegerField(default=2, validators=[
                                MinValueValidator(0), MaxValueValidator(5)])
     event = models.OneToOneField(
         "event.Event", on_delete=models.CASCADE, related_name="evaluations")
     date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return self.name
+        return f'{self.student.student_id} - {self.event.name} - {self.rate}'
 
     class Meta:
         ordering = ["date"]

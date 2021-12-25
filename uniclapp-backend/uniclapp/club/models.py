@@ -1,13 +1,13 @@
 from django.db import models
-from django.db.models.deletion import CASCADE, SET_NULL
-from django.db.models.enums import TextChoices
+from django.db.models.deletion import CASCADE
 from club import enums
 
 
 class Club(models.Model):
     name = models.CharField(max_length=100)
     about = models.TextField()
-    rate = models.FloatField(default=0)
+    rate = models.FloatField(default=0, validators=[
+        MinValueValidator(0), MaxValueValidator(5)])
     category = models.CharField(max_length=20, choices=enums.ClubTypes.choices)
 
     @property
@@ -20,11 +20,16 @@ class Club(models.Model):
     def __str__(self):
         return self.name
 
+    def calculate_average_rate(self):
+        average = self.rate / len(self.events)
+        self.rate = average
+        self.save(update_fields=["rate"])
+
 
 class ClubFollowing(models.Model):
-    student = models.OneToOneField(
+    student = models.ForeignKey(
         "accounts.Student", on_delete=models.CASCADE, related_name="followees")
-    club = models.OneToOneField(
+    club = models.ForeignKey(
         Club, on_delete=models.CASCADE, related_name="followers")
     created = models.DateTimeField(auto_now_add=True)
 
@@ -32,4 +37,4 @@ class ClubFollowing(models.Model):
         ordering = ["-created"]
 
     def __str__(self):
-        f"{self.studen.full_name} follows {self.club.name}"
+        return f"{self.student.student_id} follows {self.club.name}"

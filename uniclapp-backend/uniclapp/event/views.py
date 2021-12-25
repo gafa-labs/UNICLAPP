@@ -38,7 +38,7 @@ class UpcomingEventAPIView(generics.ListAPIView):
 
 class PendingEventAPIView(generics.ListAPIView):
     serializer_class = serializers.EventSerializer
-    queryset = Event.objects.filter(status="pending")
+    queryset = Event.objects.filter(event_status="pending")
 
 
 class ClubEventsViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.RetrieveModelMixin):
