@@ -4,7 +4,7 @@ from rest_framework.exceptions import ValidationError
 from club.models import Club, ClubFollowing
 from club.serializers import ClubSerializer
 from club import utils
-from club.serializers import BasicClubSerializer, ClubFollowingSerializer
+from club.serializers import BasicClubSerializer, ClubFollowingSerializer, ClubLeaderBoardSerializer
 
 
 class ClubListAPIView(generics.ListAPIView):
@@ -90,3 +90,8 @@ class ClubFollowingsUnfollowAPIView(generics.RetrieveAPIView):
                 return Response(status=status.HTTP_404_NOT_FOUND)
             return Response(status=status.HTTP_404_NOT_FOUND)
         return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+
+class LeaderBoardAPIView(generics.ListAPIView):
+    serializer_class = ClubLeaderBoardSerializer
+    queryset = Club.objects.all()

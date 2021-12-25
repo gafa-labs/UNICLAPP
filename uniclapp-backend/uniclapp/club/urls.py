@@ -14,6 +14,8 @@ urlpatterns = [
          name="club_following-follow"),
     path("clubs/followings/unfollow/<int:pk>/", views.ClubFollowingsUnfollowAPIView.as_view(),
          name="club_following-unfollow"),
+    path("clubs/leaderboard/", views.LeaderBoardAPIView.as_view(),
+         name="club_leader_board"),
 
 
 ]
