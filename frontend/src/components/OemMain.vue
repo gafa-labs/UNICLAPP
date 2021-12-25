@@ -75,81 +75,28 @@
 </template>
 
 <script>
+import axios from "axios";
 export default {
   data() {
     return {
-      pendingEvents: [
-        {
-          name: "Introductory Meeting",
-          description: "Descriptiiiiiioooooon",
-          location: "Mayfest Area",
-          date: new Date(2021, 8, 16, 15, 45)
-        },
-        {
-          name: "Introductory Meeting2",
-          description: "Descriptiiiiiioooooon",
-          location: "Mayfest Area",
-          date: new Date(2021, 8, 16, 15, 25)
-        },
-        {
-          name: "Fast & Curious Meeting",
-          description:
-            "DescriptaaaaaaaaaaiiiiiioooooonDescriptaaaaaaaaaaiiiiiioooooon",
-          location: "Cyberpark",
-          date: new Date(2022, 3, 6, 21, 45)
-        }
-      ],
-      approvedEvents: [
-        {
-          name: "approvedIntroductory Meeting",
-          description: "Descriptiiiiiioooooon",
-          location: "Mayfest Area",
-          date: new Date(2021, 8, 16, 15, 45)
-        },
-        {
-          name: "approvedIntroductory Meeting2",
-          description: "Descriptiiiiiioooooon",
-          location: "Mayfest Area",
-          date: new Date(2021, 8, 16, 15, 25)
-        },
-        {
-          name: "approvedFast & Curious Meeting",
-          description:
-            "DescriptaaaaaaaaaaiiiiiioooooonDescriptaaaaaaaaaaiiiiiioooooon",
-          location: "Cyberpark",
-          date: new Date(2022, 3, 6, 21, 45)
-        }
-      ],
-      rejectedEvents: [
-        {
-          name: "rejectedIntroductory Meeting",
-          description: "Descriptiiiiiioooooon",
-          location: "Mayfest Area",
-          date: new Date(2021, 8, 16, 15, 45)
-        },
-        {
-          name: "rejectedIntroductory Meeting2",
-          description: "Descriptiiiiiioooooon",
-          location: "Mayfest Area",
-          date: new Date(2021, 8, 16, 15, 25)
-        },
-        {
-          name: "rejectedFast & Curious Meeting",
-          description:
-            "DescriptaaaaaaaaaaiiiiiioooooonDescriptaaaaaaaaaaiiiiiioooooon",
-          location: "Cyberpark",
-          date: new Date(2022, 3, 6, 21, 45)
-        }
-      ]
+      pendingEvents: [],
+      approvedEvents: [],
+      rejectedEvents: []
     };
   },
   computed: {
     headersPending() {
       return [
         {
-          text: "Name",
+          text: "Event Name",
           align: "left",
           value: "name",
+          sortable: false
+        },
+        {
+          text: "Club Name",
+          align: "left",
+          value: "clubName",
           sortable: false
         },
         {
@@ -165,9 +112,15 @@ export default {
           sortable: false
         },
         {
-          text: "Date",
+          text: "Start Date",
           align: "center",
-          value: "date",
+          value: "start_datetime",
+          sortable: false
+        },
+        {
+          text: "End Date",
+          align: "center",
+          value: "end_datetime",
           sortable: false
         },
         {
@@ -187,9 +140,15 @@ export default {
     headersApproved() {
       return [
         {
-          text: "Name",
+          text: "Event Name",
           align: "left",
           value: "name",
+          sortable: false
+        },
+        {
+          text: "Club Name",
+          align: "left",
+          value: "clubName",
           sortable: false
         },
         {
@@ -205,9 +164,15 @@ export default {
           sortable: false
         },
         {
-          text: "Date",
+          text: "Start Date",
           align: "center",
-          value: "date",
+          value: "start_datetime",
+          sortable: false
+        },
+        {
+          text: "End Date",
+          align: "center",
+          value: "end_datetime",
           sortable: false
         }
       ];
@@ -215,9 +180,15 @@ export default {
     headersRejected() {
       return [
         {
-          text: "Name",
+          text: "Event Name",
           align: "left",
           value: "name",
+          sortable: false
+        },
+        {
+          text: "Club Name",
+          align: "left",
+          value: "clubName",
           sortable: false
         },
         {
@@ -233,9 +204,15 @@ export default {
           sortable: false
         },
         {
-          text: "Date",
+          text: "Start Date",
           align: "center",
-          value: "date",
+          value: "start_datetime",
+          sortable: false
+        },
+        {
+          text: "End Date",
+          align: "center",
+          value: "end_datetime",
           sortable: false
         }
       ];
@@ -252,8 +229,8 @@ export default {
       return "";
     },
     truncateString(str) {
-      if (str.length > 50) {
-        return str.slice(0, 50) + "...";
+      if (str.length > 30) {
+        return str.slice(0, 30) + "...";
       } else {
         return str;
       }
@@ -263,6 +240,9 @@ export default {
         if (this.pendingEvents[i] === item) {
           this.pendingEvents.splice(i, 1);
           this.approvedEvents.push(item);
+          const endpoint =
+            "http://localhost:8000/api/events/oem/" + item.id + "/";
+          axios.put(endpoint, { event_status: "upcoming" });
         }
       }
     },
@@ -271,9 +251,36 @@ export default {
         if (this.pendingEvents[i] === item) {
           this.pendingEvents.splice(i, 1);
           this.rejectedEvents.push(item);
+          const endpoint =
+            "http://localhost:8000/api/events/oem/" + item.id + "/";
+          axios.put(endpoint, { event_status: "rejected" });
         }
       }
     }
+  },
+  created() {
+    axios.get("http://localhost:8000/api/events/oem/").then(response => {
+      response.data.forEach(event => {
+        console.log(event);
+        var parsedEvent = {
+          id: event.id,
+          name: event.name,
+          clubName: event.club.name,
+          description: event.description,
+          location: event.location,
+          start_datetime: event.start_datetime,
+          end_datetime: event.end_datetime,
+          status: event.event_status
+        };
+        if (parsedEvent.status === "pending") {
+          this.pendingEvents.push(parsedEvent);
+        } else if (parsedEvent.status === "upcoming") {
+          this.approvedEvents.push(parsedEvent);
+        } else if (parsedEvent.status === "rejected") {
+          this.rejectedEvents.push(parsedEvent);
+        }
+      });
+    });
   }
 };
 </script>
