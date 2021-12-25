@@ -1,7 +1,7 @@
 from rest_framework import generics, mixins, status, viewsets
 from rest_framework.response import Response
 from event import serializers
-from event.models import Event
+from event.models import Event, EventEnrollment
 from event import utils
 
 
@@ -33,6 +33,18 @@ class EventCreateAPIView(generics.CreateAPIView):
                 if serializer.is_valid():
                     serializer.save()
                     return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+class EventDestroyAPIView(generics.DestroyAPIView):
+    serializer_class = serializers.ClubEventSerializer
+    queryset = Event.objects.all()
+
+    def delete(self, request, pk):
+        event = Event.objects.get(pk=pk)
+        if event:
+            event.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response(status=status.HTTP_404_NOT_FOUND)
 
 
 class PastEventAPIView(generics.ListAPIView):
@@ -135,13 +147,40 @@ class ClubUpcomingEventAPIView(generics.RetrieveDestroyAPIView):
         return Response(status=status.HTTP_404_NOT_FOUND)
 
 
-class EventDestroyAPIView(generics.DestroyAPIView):
-    serializer_class = serializers.ClubEventSerializer
-    queryset = Event.objects.all()
+class EventEnrollmentAPIView(generics.RetrieveAPIView):
+    serializer_class = serializers.EventEnrollmentSerializer
+    queryset = EventEnrollment.objects.all()
+    lookup_field = 'pk'
 
-    def delete(self, request, pk):
-        event = Event.objects.get(pk=pk)
-        if event:
-            event.delete()
-            return Response(status=status.HTTP_204_NO_CONTENT)
-        return Response(status=status.HTTP_404_NOT_FOUND)
+    def get(self, request, pk):
+        user = request.user
+        if user:
+            student = user.student
+            if student:
+                event = Event.objects.get(pk=pk)
+                if event:
+                    if not EventEnrollment.objects.filter(student=student, event=event).exists():
+                        event_enrollment = utils.enroll_in_event(
+                            student.id, event.id)
+                        serializer = self.get_serializer(event_enrollment)
+                        return Response(serializer.data, status=status.HTTP_201_CREATED)
+                    else:
+                        return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+class EventCancelEnrollmentAPIView(generics.RetrieveAPIView):
+    serializer_class = serializers.EventEnrollmentSerializer
+    queryset = EventEnrollment.objects.all()
+    lookup_field = 'pk'
+
+    def get(self, request, pk):
+        user = request.user
+        if user:
+            student = user.student
+            if student:
+                event = Event.objects.get(pk=pk)
+                if event:
+                    if EventEnrollment.objects.filter(student=student, event=event).exists():
+                        return(utils.cancell_enrollment(student.id, event.id))
+                    else:
+                        return Response(status=status.HTTP_404_NOT_FOUND)

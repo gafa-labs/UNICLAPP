@@ -11,6 +11,10 @@ urlpatterns = [
     path(
         'events/<int:pk>/delete/', views.EventDestroyAPIView.as_view(), name='event-delete'),
     path(
+        'events/<int:pk>/enroll/', views.EventEnrollmentAPIView.as_view(), name='enroll-event'),
+    path(
+        'events/<int:pk>/cancel-enrollment/', views.EventCancelEnrollmentAPIView.as_view(), name='cancel-enrollment'),
+    path(
         'events/past/', views.PastEventAPIView.as_view(), name='past-events'),
     path(
         'events/all-upcoming-events/', views.UpcomingEventAPIView.as_view(), name='all-upcoming-events'),
