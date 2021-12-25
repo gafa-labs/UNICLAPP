@@ -36,22 +36,29 @@ class UpcomingEventAPIView(generics.ListAPIView):
     serializer_class = serializers.BasicEventSerializer
     queryset = Event.objects.all()
 
-    # TODO
-
     def get(self, request):
         user = request.user
         if user:
             student = user.student
             if student:
+                response_data = {}
+                all_upcoming_events = Event.objects.filter(is_past=False)
+                serializer = self.get_serializer(
+                    all_upcoming_events, many=True)
+                data = serializer.data
+
                 enrolled_events = utils.get_student_enrolled_upcoming_events(
                     student.id)
                 queryset = Event.objects.filter(id__in=enrolled_events)
                 serializer = self.get_serializer(queryset)
-
+                response_data["all_upcoming_events"] = data
+                response_data["enrolled_events"] = enrolled_events
+                """
                 upcoming_events = [
                     x for x in Event.objects.all() if not x.is_past]
                 serializer = self.get_serializer(upcoming_events, many=True)
-                return Response(serializer.data)
+                """
+                return Response(response_data)
 
 
 class PendingEventAPIView(generics.ListAPIView):
