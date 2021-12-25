@@ -44,7 +44,6 @@ INSTALLED_APPS = [
     'club',
     'accounts',
     'event',
-    'place',
     'evaluation',
 ]
 
