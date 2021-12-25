@@ -26,3 +26,16 @@ class EventEnrollmentSerializer(serializers.ModelSerializer):
     class Meta:
         model = EventEnrollment
         fields = "__all__"
+
+
+class EventHistorySerializer(serializers.ModelSerializer):
+    event = EventSerializer(read_only=True)
+
+    class Meta:
+        model = EventEnrollment
+        fields = "__all__"
+
+
+class RateEventSerializer(serializers.ModelSerializer):
+    model = EventEnrollment
+    fields = "rate"

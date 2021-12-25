@@ -2,6 +2,7 @@ from django.db import models
 from event import enums
 from django.utils import timezone
 from django.core.validators import MinValueValidator, MaxValueValidator
+from evaluation.models import Evaluation
 
 
 class Event(models.Model):
@@ -38,10 +39,12 @@ class Event(models.Model):
 
 class EventEnrollment(models.Model):
     student = models.ForeignKey(
-        "accounts.Student", on_delete=models.CASCADE, related_name="enrolled_students")
+        "accounts.Student", on_delete=models.CASCADE, related_name="enrolled_events")
     event = models.ForeignKey(
-        Event, on_delete=models.CASCADE, related_name="enrolled_events")
+        Event, on_delete=models.CASCADE, related_name="enrolled_students")
     created = models.DateTimeField(auto_now_add=True)
+    rate = models.IntegerField(default=0, validators=[
+                               MinValueValidator(0), MaxValueValidator(5)])
 
     class Meta:
         ordering = ["-created"]

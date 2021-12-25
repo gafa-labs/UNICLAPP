@@ -4,5 +4,7 @@ from evaluation.views import EvaluationCreateAPIView, EvaluationListAPIView
 urlpatterns = [
     path('evaluations/<int:pk>/make-evaluation/',
          EvaluationCreateAPIView.as_view(), name='make-evaluation'),
-    path('evaluations/', EvaluationListAPIView.as_view(), name='evaluations'),
+    path('evaluations/evaluation-history/',
+         EvaluationListAPIView.as_view(), name='evaluation-history'),
+
 ]
