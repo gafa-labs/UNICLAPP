@@ -28,6 +28,10 @@ class Event(models.Model):
             self.event_status = enums.EventStatus.past
             self.save(update_fields=["event_status"])
 
+    @property
+    def number_of_participants(self):
+        return len(self.enrolled_students.all())
+
     def calculate_average_rate(self):
         average = self.rate / len(self.evaluations)
         self.rate = average

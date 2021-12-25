@@ -11,7 +11,7 @@ class EventAPIView(generics.ListAPIView):
     queryset = Event.objects.all()
 
 
-class EventDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
+class EventDetailAPIView(generics.RetrieveAPIView):
     serializer_class = serializers.EventSerializer
     queryset = Event.objects.all()
     lookup_field = "pk"
@@ -213,7 +213,7 @@ class EventTrackerAPIView(generics.ListAPIView):
 
 
 class OEMEventAPIView(generics.ListAPIView):
-    serializer_class = serializers.EventSerializer
+    serializer_class = serializers.AdvancedEventSerializer
     queryset = Event.objects.exclude(event_status="past")
 
 

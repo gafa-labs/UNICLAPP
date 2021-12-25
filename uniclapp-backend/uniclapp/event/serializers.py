@@ -3,10 +3,21 @@ from event.models import Event, EventEnrollment
 from club.serializers import ClubSerializer
 
 
+class AdvancedEventSerializer(serializers.ModelSerializer):
+    club = ClubSerializer(read_only=True)
+
+    class Meta:
+        model = Event
+        fields = ["name", "description", "location", "start_datetime",
+                  "end_datetime", "rate", "number_of_participants", "club"]
+
+
 class EventSerializer(serializers.ModelSerializer):
     class Meta:
         model = Event
-        fields = '__all__'
+        fields = ["name", "description", "location", "start_datetime",
+                  "end_datetime", "rate", "number_of_participants",
+                  "club", "event_status", "is_online", "ge_status", "ge_point", "zoom_link"]
 
 
 class BasicEventSerializer(serializers.ModelSerializer):
