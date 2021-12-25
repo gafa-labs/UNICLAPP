@@ -222,3 +222,18 @@ class RateEventAPIView(generics.UpdateAPIView):
                 data["event"] = event.id
                 utils.calculate_average_event_rate(event.id)
                 return Response(data, status=status.HTTP_201_CREATED)
+
+
+class EventTrackerAPIView(generics.ListAPIView):
+    serializer_class = serializers.EventTrackerSerializer
+    queryset = Event.objects.all()
+
+    def get(self, request):
+        user = request.user
+        if user:
+            student = user.student
+            upcoming_events = utils.get_student_enrolled_upcoming_events(
+                student.id)
+            queryset = Event.objects.filter(id__in=upcoming_events)
+            serializer = self.get_serializer(queryset, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)

@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from event.models import Event, EventEnrollment
+from club.serializers import ClubSerializer
 
 
 class EventSerializer(serializers.ModelSerializer):
@@ -39,3 +40,11 @@ class EventHistorySerializer(serializers.ModelSerializer):
 class RateEventSerializer(serializers.ModelSerializer):
     model = EventEnrollment
     fields = "rate"
+
+
+class EventTrackerSerializer(serializers.ModelSerializer):
+    club = ClubSerializer(read_only=True)
+
+    class Meta:
+        model = Event
+        fields = "__all__"
