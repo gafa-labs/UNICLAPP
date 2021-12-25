@@ -21,7 +21,7 @@
           {{ truncateString(item.description) }}
         </template>
         <template v-slot:item.date="{ item }">
-          {{ formatDate(item) }}
+          {{ item }}
         </template>
         <template v-slot:item.approve="{ item }">
           <v-btn color="green lighten-1" rounded small @click="approve(item)"
@@ -49,7 +49,7 @@
           {{ truncateString(item.description) }}
         </template>
         <template v-slot:item.date="{ item }">
-          {{ formatDate(item) }}
+          {{ item }}
         </template>
       </v-data-table>
     </v-row>
@@ -67,7 +67,7 @@
           {{ truncateString(item.description) }}
         </template>
         <template v-slot:item.date="{ item }">
-          {{ formatDate(item) }}
+          {{ item }}
         </template>
       </v-data-table>
     </v-row>
@@ -223,8 +223,8 @@ export default {
       this.$router.push("/oemLogin");
     },
     formatDate(item) {
-      if (item.date) {
-        return item.date.toLocaleString();
+      if (item) {
+        return new Date(item).toLocaleString();
       }
       return "";
     },
@@ -261,15 +261,14 @@ export default {
   created() {
     axios.get("http://localhost:8000/api/events/oem/").then(response => {
       response.data.forEach(event => {
-        console.log(event);
         var parsedEvent = {
           id: event.id,
           name: event.name,
           clubName: event.club.name,
           description: event.description,
           location: event.location,
-          start_datetime: event.start_datetime,
-          end_datetime: event.end_datetime,
+          start_datetime: this.formatDate(event.start_datetime),
+          end_datetime: this.formatDate(event.end_datetime),
           status: event.event_status
         };
         if (parsedEvent.status === "pending") {
