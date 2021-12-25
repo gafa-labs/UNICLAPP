@@ -12,7 +12,7 @@
 
         <v-list-item>
           <v-list-item-content>
-            <v-list-item-title>Name Surname</v-list-item-title>
+            <v-list-item-title>{{ information.name }}</v-list-item-title>
             <v-list-item-subtitle>PSI: 100</v-list-item-subtitle>
           </v-list-item-content>
         </v-list-item>
@@ -101,9 +101,14 @@
 </template>
 
 <script>
+import axios from "axios";
 export default {
   data() {
     return {
+      information: {
+        name: "",
+        psi: 98
+      },
       userStatus: "BoardMember",
       studentListItems: [
         { title: "Profile", icon: "mdi-account", path: "/profile" },
@@ -170,6 +175,17 @@ export default {
       this.$router.push("/");
       this.$store.state.isLoggedIn = false;
     }
+  },
+  created() {
+    var token = "Token " + JSON.parse(localStorage.getItem("user")).token;
+    axios
+      .get("http://localhost:8000/api/profiles/student/", {
+        headers: { Authorization: token }
+      })
+      .then(response => {
+        this.information = response.data;
+      })
+      .catch(e => console.log(e));
   }
 };
 </script>
