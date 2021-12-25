@@ -22,6 +22,20 @@ class EventCreateAPIView(generics.CreateAPIView):
     serializer_class = serializers.EventSerializer
     queryset = Event.objects.all()
 
+    def post(self, request):
+        user = request.user
+        if user:
+            student = user.student
+            if student:
+                boardmember = student.boardmember
+                club_id = boardmember.club.id
+                data = request.data
+                data["club"] = club_id
+                serializer = self.get_serializer(data=data)
+                if serializer.is_valid():
+                    serializer.save()
+                    return Response(serializer.data, status=status.HTTP_201_CREATED)
+
 
 class PastEventAPIView(generics.ListAPIView):
     serializer_class = serializers.EventSerializer
