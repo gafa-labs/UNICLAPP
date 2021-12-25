@@ -9,7 +9,7 @@ class Event(models.Model):
     event_status = models.TextField(
         choices=enums.EventStatus.choices, default=enums.EventStatus.pending)
     club = models.ForeignKey(
-        "club.Club", on_delete=models.CASCADE, related_name="%(class)s_events")
+        "club.Club", on_delete=models.CASCADE, related_name="events")
     description = models.TextField()
     ge_status = models.BooleanField(default=False)
     ge_point = models.IntegerField(default="10")

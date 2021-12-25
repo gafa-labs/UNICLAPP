@@ -1,6 +1,8 @@
 from accounts.models import Student
 import event
 from event.models import Event, EventEnrollment
+from club.utils import get_following_club_list
+from club.models import Club
 
 
 def enroll_in_event(student_id, event_id):
@@ -33,4 +35,17 @@ def get_student_enrolled_upcoming_events(student_id):
             if instance.event.event_status == "upcoming":
                 events.append(instance.event.id)
         return events
+    return None
+
+
+def get_student_clubs_upcoming_events(student_id):
+    student = Student.objects.get(id=student_id)
+    if student:
+        event_list = []
+        clubs = get_following_club_list(student.id)
+        club_queryset = Club.objects.filter(id__in=clubs)
+        for club in club_queryset:
+            if club.events:
+                event_list.append(club.events.all())
+        return event_list
     return None
