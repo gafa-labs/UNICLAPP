@@ -118,3 +118,20 @@ class ClubEventsViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.R
         events = Event.objects.filter(club=pk)
         serializer = serializers.EventSerializer(events, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class ClubUpcomingEventAPIView(generics.RetrieveAPIView):
+    serializer_class = serializers.ClubEventSerializer
+    queryset = Event.objects.all()
+
+    def get(self, request):
+        user = request.user
+        if user:
+            student = user.student
+            if student:
+                boardmember = student.boardmember
+                club = boardmember.club
+                queryset = Event.objects.filter(club=club)
+                serializer = self.get_serializer(queryset, many=True)
+                return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_404_NOT_FOUND)

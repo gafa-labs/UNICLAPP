@@ -13,3 +13,10 @@ class BasicEventSerializer(serializers.ModelSerializer):
         model = Event
         fields = ["id", "club", "name", "description", "location",
                   "start_datetime", "end_datetime", "ge_status", "is_online", ]
+
+
+class ClubEventSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Event
+        fields = ["name", "description", "location", "ge_status",
+                  "is_online", "start_datetime", "end_datetime"]
