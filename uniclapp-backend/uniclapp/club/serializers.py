@@ -9,7 +9,7 @@ class ClubSerializer(serializers.ModelSerializer):
                   "category", "number_of_followers", ]
 
 
-class ClubFollowingSerializer(serializers.ModelSerializer):
+class BasicClubSerializer(serializers.ModelSerializer):
     class Meta:
         model = Club
         fields = ["name", "rate", "category", "number_of_followers", ]
