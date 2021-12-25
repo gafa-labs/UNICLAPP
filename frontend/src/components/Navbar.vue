@@ -177,15 +177,17 @@ export default {
     }
   },
   created() {
-    var token = "Token " + JSON.parse(localStorage.getItem("user")).token;
-    axios
-      .get("http://localhost:8000/api/profiles/student/", {
-        headers: { Authorization: token }
-      })
-      .then(response => {
-        this.information = response.data;
-      })
-      .catch(e => console.log(e));
+    if (localStorage.getItem("status") === "true") {
+      var token = "Token " + JSON.parse(localStorage.getItem("user")).token;
+      axios
+        .get("http://localhost:8000/api/profiles/student/", {
+          headers: { Authorization: token }
+        })
+        .then(response => {
+          this.information = response.data;
+        })
+        .catch(e => console.log(e));
+    }
   }
 };
 </script>

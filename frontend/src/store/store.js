@@ -11,7 +11,7 @@ export const store = new Vuex.Store({
   },
   mutations: {
     initialiseStore(state) {
-      state.isLoggedIn = localStorage.getItem("status");
+      state.isLoggedIn = localStorage.getItem("status") == "true";
     }
   }
 });
