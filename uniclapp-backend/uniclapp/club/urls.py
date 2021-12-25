@@ -9,6 +9,11 @@ urlpatterns = [
     path("clubs/explore/", views.ClubExploreAPIView.as_view(),
          name="club_explore"),
     path("clubs/followings/", views.ClubFollowingsAPIView.as_view(),
-         name="club_following")
+         name="club_following"),
+    path("clubs/followings/follow/<int:pk>/", views.ClubFollowingsFollowAPIView.as_view(),
+         name="club_following-follow"),
+    path("clubs/followings/unfollow/<int:pk>/", views.ClubFollowingsUnfollowAPIView.as_view(),
+         name="club_following-unfollow"),
+
 
 ]

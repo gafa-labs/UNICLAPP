@@ -13,3 +13,9 @@ class BasicClubSerializer(serializers.ModelSerializer):
     class Meta:
         model = Club
         fields = ["id", "name", "rate", "category", "number_of_followers", ]
+
+
+class ClubFollowingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ClubFollowing
+        fields = "__all__"

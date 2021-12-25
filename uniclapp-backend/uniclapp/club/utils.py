@@ -13,6 +13,15 @@ def follow_club(student_id, club_id):
     return ValidationError()
 
 
+def unfollow_club(student_id, club_id):
+    student = Student.objects.get(id=student_id)
+    club = Club.objects.get(id=club_id)
+    if student and club:
+        club_following = ClubFollowing.objects.get(
+            student=student, club=club)
+        club_following.delete()
+
+
 def get_following_club_list(student_id):
     student = Student.objects.get(id=student_id)
     if student:
