@@ -9,7 +9,7 @@
         style="border-right: 2px solid lightsteelblue"
       >
         <v-text-field
-          v-model="promotingCandidate.name"
+          v-model="promotingCandidate.student_name"
           label="Student Name"
           outlined
           dense
@@ -17,7 +17,7 @@
           class="mt-10 mb-2"
         ></v-text-field>
         <v-text-field
-          v-model="promotingCandidate.id"
+          v-model="promotingCandidate.student_id"
           label="Student ID"
           outlined
           dense
@@ -55,7 +55,7 @@
                 color="red lighten-1"
                 rounded
                 small
-                v-if="true"
+                v-if="item.student_id != chairmanId"
                 @click="demote(item)"
                 >Demote</v-btn
               >
@@ -67,36 +67,23 @@
   </v-container>
 </template>
 <script>
+import axios from "axios";
 export default {
   data() {
     return {
+      chairmanId: "",
+      header: {
+        headers: {
+          Authorization:
+            "Token " + JSON.parse(localStorage.getItem("user")).token
+        }
+      },
       promotingCandidate: {
-        name: "",
-        id: "",
+        student_name: "",
+        student_id: "",
         email: ""
       },
-      boardMembers: [
-        {
-          name: "Ayberk Yasa",
-          id: 21802180,
-          email: "ayberk.yasa@ug.bilkent.edu.tr"
-        },
-        {
-          name: "Fatih Kaplama",
-          id: 21902190,
-          email: "fatih.kaplama@ug.bilkent.edu.tr"
-        },
-        {
-          name: "Gorkem Ayten",
-          id: 21202120,
-          email: "gorkem.ayten@gmail.com"
-        },
-        {
-          name: "Mert Atakan Onrat",
-          id: 21212121,
-          email: "atakan.onrat@gmail.com"
-        }
-      ]
+      boardMembers: []
     };
   },
   computed: {
@@ -105,12 +92,12 @@ export default {
         {
           text: "Name",
           align: "center",
-          value: "name"
+          value: "student_name"
         },
         {
           text: "ID",
           align: "center",
-          value: "id"
+          value: "student_id"
         },
         {
           text: "E-mail",
@@ -128,16 +115,59 @@ export default {
   methods: {
     promote() {
       const object = this.promotingCandidate;
-      this.boardMembers.push(object);
-      this.promotingCandidate = {};
+      axios
+        .post(
+          "http://localhost:8000/api/accounts/rank/promote-student/",
+          object,
+          this.header
+        )
+        .then(response => {
+          object.objectId = response.data;
+          this.boardMembers.push(object);
+          this.promotingCandidate = {};
+        })
+        .catch(e => {
+          alert("There is no such a student!");
+          this.promotingCandidate = {};
+        });
     },
     demote(item) {
       for (var i = 0; i < this.boardMembers.length; i++) {
         if (this.boardMembers[i] === item) {
           this.boardMembers.splice(i, 1);
+          const endpoint =
+            "http://localhost:8000/api/accounts/rank/demote-boardmember/" +
+            item.objectId +
+            "/";
+          axios.delete(endpoint).catch(e => {
+            console.log(e);
+          });
         }
       }
     }
+  },
+  created() {
+    axios
+      .get("http://localhost:8000/api/profiles/student/", this.header)
+      .then(response => {
+        this.chairmanId = response.data.student_id;
+      });
+    axios
+      .get("http://localhost:8000/api/club/boardmembers/", this.header)
+      .then(response => {
+        response.data.forEach(object => {
+          const boardMember = {
+            student_name: object.student.user.full_name,
+            student_id: object.student.student_id,
+            email: object.student.user.email,
+            objectId: object.id
+          };
+          this.boardMembers.push(boardMember);
+        });
+      })
+      .catch(e => {
+        console.log(e);
+      });
   }
 };
 </script>
