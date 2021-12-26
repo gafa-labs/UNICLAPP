@@ -114,6 +114,7 @@ class StudentProfileAPIView(generics.RetrieveAPIView):
             data = serializer.data
             data["name"] = user.full_name
             data["email"] = user.email
+            data["id"] = user.id
             return Response(data)
 
 
