@@ -2,18 +2,15 @@
   <div>
     <v-navigation-drawer app>
       <v-list>
-        <v-list-item style="justify-content: center;">
-          <v-list-item-avatar size="75%">
-            <v-img
-              src="https://randomuser.me/api/portraits/women/85.jpg"
-            ></v-img>
-          </v-list-item-avatar>
+        <v-list-item two-line style="justify-content: center;">
+          <v-icon x-large style="font-size: 150px">mdi-account</v-icon>
         </v-list-item>
 
         <v-list-item>
           <v-list-item-content>
-            <v-list-item-title>{{ information.name }}</v-list-item-title>
-            <v-list-item-subtitle>PSI: 100</v-list-item-subtitle>
+            <v-list-item-title class="text-center" style="font-size: 28px">{{
+              information.name
+            }}</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
 

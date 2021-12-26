@@ -17,18 +17,18 @@
         item-key="name"
         sort-by="date"
       >
-        <template v-slot:item.description="{ item }">
+        <template v-slot:[`item.description`]="{ item }">
           {{ truncateString(item.description) }}
         </template>
-        <template v-slot:item.date="{ item }">
+        <template v-slot:[`item.date`]="{ item }">
           {{ item }}
         </template>
-        <template v-slot:item.approve="{ item }">
+        <template v-slot:[`item.approve`]="{ item }">
           <v-btn color="green lighten-1" rounded small @click="approve(item)"
             >Approve</v-btn
           >
         </template>
-        <template v-slot:item.reject="{ item }">
+        <template v-slot:[`item.reject`]="{ item }">
           <v-btn color="red lighten-1" rounded small @click="reject(item)"
             >Reject</v-btn
           >
@@ -45,10 +45,10 @@
         item-key="name"
         sort-by="date"
       >
-        <template v-slot:item.description="{ item }">
+        <template v-slot:[`item.description`]="{ item }">
           {{ truncateString(item.description) }}
         </template>
-        <template v-slot:item.date="{ item }">
+        <template v-slot:[`item.date`]="{ item }">
           {{ item }}
         </template>
       </v-data-table>
@@ -63,10 +63,10 @@
         item-key="name"
         sort-by="date"
       >
-        <template v-slot:item.description="{ item }">
+        <template v-slot:[`item.description`]="{ item }">
           {{ truncateString(item.description) }}
         </template>
-        <template v-slot:item.date="{ item }">
+        <template v-slot:[`item.date`]="{ item }">
           {{ item }}
         </template>
       </v-data-table>
@@ -259,27 +259,32 @@ export default {
     }
   },
   created() {
-    axios.get("http://localhost:8000/api/events/oem/").then(response => {
-      response.data.forEach(event => {
-        var parsedEvent = {
-          id: event.id,
-          name: event.name,
-          clubName: event.club.name,
-          description: event.description,
-          location: event.location,
-          start_datetime: this.formatDate(event.start_datetime),
-          end_datetime: this.formatDate(event.end_datetime),
-          status: event.event_status
-        };
-        if (parsedEvent.status === "pending") {
-          this.pendingEvents.push(parsedEvent);
-        } else if (parsedEvent.status === "upcoming") {
-          this.approvedEvents.push(parsedEvent);
-        } else if (parsedEvent.status === "rejected") {
-          this.rejectedEvents.push(parsedEvent);
-        }
+    axios
+      .get("http://localhost:8000/api/events/oem/")
+      .then(response => {
+        response.data.forEach(event => {
+          var parsedEvent = {
+            id: event.id,
+            name: event.name,
+            clubName: event.club.name,
+            description: event.description,
+            location: event.location,
+            start_datetime: this.formatDate(event.start_datetime),
+            end_datetime: this.formatDate(event.end_datetime),
+            status: event.event_status
+          };
+          if (parsedEvent.status === "pending") {
+            this.pendingEvents.push(parsedEvent);
+          } else if (parsedEvent.status === "upcoming") {
+            this.approvedEvents.push(parsedEvent);
+          } else if (parsedEvent.status === "rejected") {
+            this.rejectedEvents.push(parsedEvent);
+          }
+        });
+      })
+      .catch(e => {
+        console.log(e);
       });
-    });
   }
 };
 </script>

@@ -107,8 +107,6 @@ export default {
       item.status = "unfollowing";
     },
     sort(value) {
-      console.log(value);
-      //value = value.toLowerCase();
       this.sortBy = value.key;
     }
   },

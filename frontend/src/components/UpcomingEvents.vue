@@ -325,13 +325,14 @@ export default {
         }
         event.time = eventHour + "." + eventMinutes;
         event.date = eventDate.toLocaleDateString();
+        var newEvent = JSON.parse(JSON.stringify(event));
         axios
           .get("http://127.0.0.1:8000/api/clubs/" + event.club + "/")
           .then(club => {
-            event.club = club.data.name;
+            newEvent.club = club.data.name;
           })
           .catch(er => console.log(er));
-        var newEvent = JSON.parse(JSON.stringify(event));
+
         this.allClubsEvents.push(newEvent);
       });
     }
