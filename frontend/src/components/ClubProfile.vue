@@ -30,9 +30,9 @@
         </v-row>
         <v-textarea
           label="About"
+          v-model="club.about"
           counter="400"
           maxlength="400"
-          :disabled="userStatus === 'ClubAdvisor'"
           no-resize
           rows="4"
           outlined
@@ -41,19 +41,30 @@
           class="mt-12 px-16"
           background-color="grey lighten-3"
         ></v-textarea>
-        <v-textarea
-          label="Category"
-          counter="100"
-          maxlength="100"
-          :disabled="userStatus === 'ClubAdvisor'"
-          no-resize
-          rows="1"
-          outlined
-          dense
-          rounded
-          class="mt-6 px-16"
-          background-color="grey lighten-3"
-        ></v-textarea>
+        <v-row>
+          <v-col cols="8"
+            ><v-select
+              v-model="club.category"
+              :items="categories"
+              filled
+              outlined
+              dense
+              rounded
+              label="Category"
+              class="mt-6 px-16"
+            ></v-select
+          ></v-col>
+          <v-col cols="4"
+            ><v-btn
+              @click="update"
+              elevation="2"
+              rounded
+              color="light-blue accent-2"
+              class="mt-6"
+              >Update</v-btn
+            ></v-col
+          >
+        </v-row>
         <v-card class="mt-6">
           <v-card-title class="justify-center">Board Members</v-card-title>
           <v-data-table
@@ -69,32 +80,45 @@
   </v-container>
 </template>
 <script>
+import axios from "axios";
 export default {
   data() {
     return {
-      userStatus: "ClubAdvisor",
+      header: {
+        headers: {
+          Authorization:
+            "Token " + JSON.parse(localStorage.getItem("user")).token
+        }
+      },
+      categories: [
+        "Business",
+        "Software",
+        "Science",
+        "Hobbies",
+        "Entertainment"
+      ],
       club: {
-        name: "ACM Bilkent Club",
-        followers: 1548,
-        rate: 4.8,
-        about: "This is the field for the description of the club.",
-        category: ["Business", "Software", "Science"],
-        boardMembers: [
-          {
-            name: "Ayberk Yasa"
-          },
-          {
-            name: "Fatih Kaplama"
-          },
-          {
-            name: "Gorkem Ayten"
-          },
-          {
-            name: "Mert Atakan Onrat"
-          }
-        ]
+        name: "",
+        id: "",
+        followers: "",
+        rate: "",
+        about: "",
+        category: "",
+        boardMembers: []
       }
     };
+  },
+  methods: {
+    update() {
+      var newUpdate = {
+        about: this.club.about,
+        category: this.club.category.toLowerCase()
+      };
+      var endpoint =
+        "http://localhost:8000/api/club/profile/" + this.club.id + "/";
+      console.log(endpoint);
+      axios.put(endpoint, newUpdate, this.header);
+    }
   },
   computed: {
     headers() {
@@ -106,6 +130,27 @@ export default {
         }
       ];
     }
+  },
+  created() {
+    axios
+      .get("http://localhost:8000/api/club/profile/", this.header)
+      .then(response => {
+        console.log(response.data[0]);
+        this.club.name = response.data[0].club.name;
+        this.club.id = response.data[0].club.id;
+        this.club.about = response.data[0].club.about;
+        this.club.category =
+          response.data[0].club.category.charAt(0).toUpperCase() +
+          response.data[0].club.category.slice(1);
+        this.club.rate = response.data[0].club.rate;
+        this.club.followers = response.data[0].club.number_of_followers;
+        response.data.forEach(data => {
+          const student = {
+            name: data.student.user.full_name
+          };
+          this.club.boardMembers.push(student);
+        });
+      });
   }
 };
 </script>
