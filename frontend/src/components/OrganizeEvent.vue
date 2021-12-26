@@ -287,12 +287,9 @@ export default {
       return true;
     },
     removeEvent(event) {
-      console.log(event.id);
       axios
         .delete("http://localhost:8000/api/events/" + event.id + "/delete/")
-        .then(response => {
-          console.log(response.data);
-        })
+        .then(response => {})
         .catch(e => console.log(e));
       for (var i = 0; i < this.upcomingEvents.length; i++) {
         if (this.upcomingEvents[i] === event) {
@@ -325,7 +322,6 @@ export default {
       axios
         .post("http://localhost:8000/api/events/create/", event, this.header)
         .then(response => {
-          console.log(response.data);
           organizedEvent = response.data;
           organizedEvent.start_datetime = this.formattedDate(
             organizedEvent.start_datetime
@@ -336,7 +332,6 @@ export default {
           organizedEvent.ge_status = organizedEvent.ge_status
             ? "Awarded"
             : "Not Awarded";
-          console.log(organizedEvent);
           this.upcomingEvents.push(organizedEvent);
           this.newEvent = {};
           this.newEvent.date = this.today;
@@ -436,7 +431,6 @@ export default {
             event.event_status.slice(1);
         });
         this.upcomingEvents = response.data;
-        console.log(response.data);
         this.upcomingEvents.map(event => {
           event.start_datetime = this.formattedDate(event.start_datetime);
           event.end_datetime = this.formattedDate(event.end_datetime);

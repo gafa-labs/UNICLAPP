@@ -210,14 +210,12 @@ export default {
       axios
         .post("http://localhost:8000/api/login/", this.information)
         .then(response => {
-          console.log(response);
           localStorage.setItem("user", JSON.stringify(response.data));
           this.$store.state.isLoggedIn = true;
           localStorage.setItem("status", true);
           this.$router.push("/profile");
         })
         .catch(e => {
-          console.log(e.response);
           if (e.response.status == 400) {
             alert("Email or password is incorrect. Please try again!");
             return;
@@ -228,7 +226,6 @@ export default {
       axios
         .post("http://localhost:8000/api/register/", this.register)
         .then(response => {
-          console.log(response.data);
           this.step--;
         })
         .catch(e => console.log(e.response));

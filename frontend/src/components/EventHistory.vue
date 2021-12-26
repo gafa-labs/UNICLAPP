@@ -127,9 +127,16 @@
   </v-container>
 </template>
 <script>
+import axios from "axios";
 export default {
   data() {
     return {
+      header: {
+        headers: {
+          Authorization:
+            "Token " + JSON.parse(localStorage.getItem("user")).token
+        }
+      },
       search: "",
       isClicked: false,
       followingClubsEvents: [
@@ -177,47 +184,29 @@ export default {
         }
       ],
       allClubsEvents: [
-        {
-          club: "ACM Bilkent Club",
-          name: "event7",
-          rate: 0,
-          avgRate: 0,
-          isRated: false
-        },
-        {
-          club: "ACM Bilkent Club",
-          name: "event8",
-          rate: 0,
-          avgRate: 0,
-          isRated: false
-        },
-        {
-          club: "ACM Bilkent Club",
-          name: "event9",
-          rate: 0,
-          avgRate: 0,
-          isRated: false
-        },
-        {
-          club: "ACM Bilkent Club",
-          name: "event10",
-          rate: 0,
-          isRated: false
-        },
-        {
-          club: "ACM Bilkent Club",
-          name: "event11",
-          rate: 0,
-          avgRate: 0,
-          isRated: false
-        }
+        // {
+        //   club: "ACM Bilkent Club",
+        //   name: "event7",
+        //   rate: 0,
+        //   avgRate: 0,
+        //   isRated: false
+        // }
       ],
       tab: null
     };
   },
   methods: {
     rated(event) {
-      event.isRated = true;
+      this.$set(event, "isRated", true);
+      var rateJson = { rate: event.rate };
+      axios
+        .put(
+          "http://127.0.0.1:8000/api/events/" + event.eventId + "/rate-event/",
+          rateJson,
+          this.header
+        )
+        .then(response => {})
+        .catch(e => console.log(e));
     },
     searched(events) {
       if (this.search === "") {
@@ -227,6 +216,35 @@ export default {
         return event.name.toLowerCase().includes(this.search.toLowerCase());
       });
     }
+  },
+  created() {
+    axios
+      .get("http://localhost:8000/api/events/event-history/", this.header)
+      .then(response => {
+        var studentRate = 0;
+        var avgRate = 0;
+        var eventId = 0;
+        response.data.forEach(item => {
+          studentRate = item.rate;
+          avgRate = item.event.rate;
+          eventId = item.id;
+          const tmp = JSON.parse(JSON.stringify(item.event));
+          this.$set(tmp, "avgRate", avgRate);
+          this.$set(tmp, "eventId", eventId);
+          this.$set(tmp, "studentRate", studentRate);
+          this.$set(tmp, "isRated", studentRate != 0);
+          this.allClubsEvents.push(tmp);
+        });
+        this.allClubsEvents.forEach(item => {
+          axios
+            .get("http://127.0.0.1:8000/api/clubs/" + item.club + "/")
+            .then(club => {
+              item.club = club.data.name;
+            })
+            .catch(er => console.log(er));
+        });
+      })
+      .catch(e => console.log(e));
   }
 };
 </script>

@@ -42,26 +42,25 @@
         <v-row class="text-h5 mb-6 font-weight-bold"
           >Your Club's Current Board Members</v-row
         >
-        <v-row>
-          <v-data-table
-            :headers="headers"
-            :items="boardMembers"
-            outlined
-            class="elevation-4"
-            item-key="name"
-          >
-            <template v-slot:item.status="{ item }">
-              <v-btn
-                color="red lighten-1"
-                rounded
-                small
-                v-if="item.student_id != chairmanId"
-                @click="demote(item)"
-                >Demote</v-btn
-              >
-            </template>
-          </v-data-table>
-        </v-row>
+
+        <v-data-table
+          :headers="headers"
+          :items="boardMembers"
+          outlined
+          class="elevation-4"
+          item-key="name"
+        >
+          <template v-slot:[`item.status`]="{ item }">
+            <v-btn
+              color="red lighten-1"
+              rounded
+              small
+              v-if="item.student_id != chairmanId"
+              @click="demote(item)"
+              >Demote</v-btn
+            >
+          </template>
+        </v-data-table>
       </v-col>
     </v-row>
   </v-container>

@@ -138,18 +138,6 @@ export default {
 
       nativeEvent.stopPropagation();
     }
-    // updateRange({ start, end }) {
-    //   const events = [];
-    //   console.log("girdi1");
-    //   const min = new Date(`${start.date}T00:00:00`);
-    //   const max = new Date(`${end.date}T23:59:59`);
-    //   this.allEvents.forEach(element => {
-    //     if (element.start >= min || element.end <= max) {
-    //       events.push(element);
-    //     }
-    //   });
-    //   this.seenEvents = events;
-    // }
   },
   created() {
     axios
@@ -166,9 +154,7 @@ export default {
             color: this.colors[this.rnd(0, this.colors.length - 1)]
           };
           this.allEvents.push(item);
-          //this.seenEvents.push(item);
         });
-        console.log(this.allEvents);
       })
       .catch(e => console.log(e));
   }

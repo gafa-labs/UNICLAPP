@@ -17,18 +17,18 @@
         item-key="name"
         sort-by="date"
       >
-        <template v-slot:item.description="{ item }">
+        <template v-slot:[`item.description`]="{ item }">
           {{ truncateString(item.description) }}
         </template>
-        <template v-slot:item.date="{ item }">
+        <template v-slot:[`item.date`]="{ item }">
           {{ item }}
         </template>
-        <template v-slot:item.approve="{ item }">
+        <template v-slot:[`item.approve`]="{ item }">
           <v-btn color="green lighten-1" rounded small @click="approve(item)"
             >Approve</v-btn
           >
         </template>
-        <template v-slot:item.reject="{ item }">
+        <template v-slot:[`item.reject`]="{ item }">
           <v-btn color="red lighten-1" rounded small @click="reject(item)"
             >Reject</v-btn
           >
@@ -45,10 +45,10 @@
         item-key="name"
         sort-by="date"
       >
-        <template v-slot:item.description="{ item }">
+        <template v-slot:[`item.description`]="{ item }">
           {{ truncateString(item.description) }}
         </template>
-        <template v-slot:item.date="{ item }">
+        <template v-slot:[`item.date`]="{ item }">
           {{ item }}
         </template>
       </v-data-table>
@@ -63,10 +63,10 @@
         item-key="name"
         sort-by="date"
       >
-        <template v-slot:item.description="{ item }">
+        <template v-slot:[`item.description`]="{ item }">
           {{ truncateString(item.description) }}
         </template>
-        <template v-slot:item.date="{ item }">
+        <template v-slot:[`item.date`]="{ item }">
           {{ item }}
         </template>
       </v-data-table>

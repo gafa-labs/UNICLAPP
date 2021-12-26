@@ -154,9 +154,7 @@ export default {
             "/",
           this.header
         )
-        .then(response => {
-          console.log(response.data);
-        })
+        .then(response => {})
         .catch(e => console.log(e));
       for (var i = 0; i < this.followingClubs.length; i++) {
         if (this.followingClubs[i].status === "unfollowing") {
@@ -173,7 +171,6 @@ export default {
           club.status = "following";
           this.followingClubs.push(club);
         });
-        console.log(this.followingClubs);
       })
       .catch(e => console.log(e));
   }
