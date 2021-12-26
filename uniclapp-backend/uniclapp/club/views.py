@@ -4,7 +4,7 @@ from rest_framework.exceptions import ValidationError
 from club.models import Club, ClubFollowing
 from club.serializers import ClubSerializer
 from club import utils
-from club.serializers import BasicClubSerializer, ClubFollowingSerializer, ClubLeaderBoardSerializer
+from club.serializers import BasicClubSerializer, ClubFollowingSerializer, ClubLeaderBoardSerializer, ClubProfileSerializer
 from accounts.serializers import BoardMemberSerializer
 from accounts.models import BoardMember
 
@@ -130,3 +130,16 @@ class ClubProfileAPIView(generics.RetrieveAPIView):
             data = serializer.data
 
             return Response(data)
+
+
+class ClubProfileUpdateAPIView(generics.UpdateAPIView):
+    serializer_class = ClubProfileSerializer
+    queryset = Club.objects.all()
+
+    def put(self, request, pk):
+        club = Club.objects.get(pk=pk)
+        serializer = ClubProfileSerializer(club, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
