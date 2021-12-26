@@ -2,7 +2,6 @@ from rest_framework import generics
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 from accounts import serializers
-from accounts.serializers import LoginSerializer, StudentRegisterSerializer, OEMSerializer, BoardMemberSerializer, ChangePasswordSerializer
 from django.contrib.auth import login, logout
 from rest_framework import status
 from rest_framework.authtoken.models import Token
@@ -11,7 +10,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 
 
 class StudentRegisterAPIView(generics.CreateAPIView):
-    serializer_class = StudentRegisterSerializer
+    serializer_class = serializers.StudentRegisterSerializer
     permission_classes = (AllowAny,)
 
     def post(self, request, *args, **kwargs):
@@ -30,7 +29,7 @@ class StudentRegisterAPIView(generics.CreateAPIView):
 
 
 class OEMRegisterAPIView(generics.CreateAPIView):
-    serializer_class = OEMSerializer
+    serializer_class = serializers.OEMSerializer
     permission_classes = (AllowAny,)
 
     def post(self, request, *args, **kwargs):
@@ -49,7 +48,7 @@ class OEMRegisterAPIView(generics.CreateAPIView):
 
 
 class LoginAPIView(generics.CreateAPIView):
-    serializer_class = LoginSerializer
+    serializer_class = serializers.LoginSerializer
     queryset = models.User.objects.all()
     permission_classes = (AllowAny,)
 
@@ -102,7 +101,7 @@ class LogoutAPIView(generics.RetrieveAPIView):
         return Response(status=status.HTTP_200_OK)
 
 
-class StudentProfileAPIView(generics.RetrieveAPIView):
+class StudentProfileAPIView(generics.RetrieveUpdateAPIView):
     serializer_class = serializers.StudentSerializer
     queryset = models.Student.objects.all()
 
@@ -119,7 +118,7 @@ class StudentProfileAPIView(generics.RetrieveAPIView):
 
 
 class PromoteStudentAPIView(generics.CreateAPIView):
-    serializer_class = BoardMemberSerializer
+    serializer_class = serializers.BoardMemberSerializer
     queryset = models.BoardMember.objects.all()
 
     def post(self, request):
@@ -152,7 +151,7 @@ class PromoteStudentAPIView(generics.CreateAPIView):
 
 
 class DemoteStudentAPIView(generics.DestroyAPIView):
-    serializer_class = BoardMemberSerializer
+    serializer_class = serializers.BoardMemberSerializer
     queryset = models.BoardMember.objects.all()
 
 
@@ -160,4 +159,10 @@ class ChangePasswordView(generics.UpdateAPIView):
 
     queryset = models.User.objects.all()
     permission_classes = (IsAuthenticated,)
-    serializer_class = ChangePasswordSerializer
+    serializer_class = serializers.ChangePasswordSerializer
+
+
+class CheckHESCodeAPIView(generics.UpdateAPIView):
+    serializer_class = serializers.HESCodeSerializer
+    queryset = models.Student.objects.all()
+    lookup_field = 'pk'

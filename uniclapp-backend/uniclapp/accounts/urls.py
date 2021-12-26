@@ -15,8 +15,11 @@ urlpatterns = [
          views.StudentProfileAPIView.as_view(), name='student-profile'),
     path('profiles/student/', views.StudentProfileAPIView.as_view(),
          name='student_profile'),
+    path('profiles/student/<int:pk>/update-hes/', views.CheckHESCodeAPIView.as_view(),
+         name='update-hes'),
     path('accounts/rank/promote-student/', views.PromoteStudentAPIView.as_view(),
          name='promote-student'),
     path('accounts/rank/demote-boardmember/<int:pk>/', views.DemoteStudentAPIView.as_view(),
          name='demote-boardmember'),
+
 ]

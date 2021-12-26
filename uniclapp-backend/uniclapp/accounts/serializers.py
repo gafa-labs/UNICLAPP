@@ -4,6 +4,7 @@ from django.contrib.auth import get_user_model
 from accounts.models import Student, OEM, BoardMember
 from club.serializers import ClubSerializer
 from django.contrib.auth.password_validation import validate_password
+from accounts import utils
 
 User = get_user_model()
 
@@ -125,3 +126,16 @@ class ChangePasswordSerializer(serializers.ModelSerializer):
         instance.save()
 
         return instance
+
+
+class HESCodeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Student
+        fields = ["hes_code"]
+
+    def validate(self, attrs):
+        if not utils.validateHesCode(attrs["hes_code"]):
+            raise serializers.ValidationError(
+                {"hes_code": "HES Code is not valid!"})
+
+        return attrs
