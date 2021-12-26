@@ -183,17 +183,13 @@ class RateEventAPIView(generics.UpdateAPIView):
         if user:
             student = user.student
             if student:
-                event = Event.objects.get(pk=pk)
-                if not EventEnrollment.objects.filter(event=event, student=student).exists():
-                    return Response(status=status.HTTP_404_NOT_FOUND)
-                event_enrollment = EventEnrollment.objects.get(
-                    event=event, student=student)
+                event_enrollment = EventEnrollment.objects.get(pk=pk)
                 data = request.data
                 event_enrollment.rate = data["rate"]
                 event_enrollment.save()
                 data["student"] = student.id
-                data["event"] = event.id
-                utils.calculate_average_event_rate(event.id)
+                data["event"] = event_enrollment.event.id
+                utils.calculate_average_event_rate(event_enrollment.event.id)
                 return Response(data, status=status.HTTP_201_CREATED)
 
 
