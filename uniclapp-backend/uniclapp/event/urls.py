@@ -32,4 +32,6 @@ urlpatterns = [
         'events/oem/', views.OEMEventAPIView.as_view(), name='oem-events'),
     path(
         'events/oem/<int:pk>/', views.OEMConfirmationAPIView.as_view(), name='event-confirmation'),
+    path(
+        'events/results/', views.EventResultsAPIView.as_view(), name='event-results'),
 ]

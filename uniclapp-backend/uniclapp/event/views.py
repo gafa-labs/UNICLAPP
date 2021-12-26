@@ -80,11 +80,7 @@ class UpcomingEventAPIView(generics.ListAPIView):
                 serializer = self.get_serializer(queryset)
                 response_data["all_upcoming_events"] = data
                 response_data["enrolled_events"] = enrolled_events
-                """
-                upcoming_events = [
-                    x for x in Event.objects.all() if not x.is_past]
-                serializer = self.get_serializer(upcoming_events, many=True)
-                """
+
                 return Response(response_data)
 
 
@@ -216,3 +212,23 @@ class OEMEventAPIView(generics.ListAPIView):
 class OEMConfirmationAPIView(generics.UpdateAPIView):
     serializer_class = serializers.EventConfirmationSerializer
     queryset = Event.objects.all()
+
+
+class EventResultsAPIView(generics.ListAPIView):
+    serializer_class = serializers.EventSerializer
+    queryset = Event.objects.all()
+
+    def get(self, request):
+
+        user = request.user
+        if user:
+            student = user.student
+            if student:
+                boardmember = student.boardmember
+                if boardmember:
+                    club = boardmember.club
+                    events = Event.objects.filter(club=club)
+                    serializer = self.get_serializer(events, many=True)
+                    return Response(serializer.data, status=status.HTTP_200_OK)
+
+        return Response(status=status.HTTP_404_NOT_FOUND)
