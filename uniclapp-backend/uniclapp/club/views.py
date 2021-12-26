@@ -105,16 +105,28 @@ class ClubBoardMemberListAPIView(generics.ListAPIView):
 
     def get(self, request):
         user = request.user
-        if user:
-            student = user.student
-            if student:
-                boardmember = student.boardmember
-                if boardmember:
-                    board_chairman = boardmember.board_chairman
-                    if board_chairman:
-                        club = board_chairman.club
-                        board_members = club.boardmembers.all()
-                        serializer = self.get_serializer(
-                            board_members, many=True)
-                        return Response(serializer.data, status=status.HTTP_200_OK)
+        if user and user.student and user.student.boardmember:
+            board_chairman = user.student.boardmember.board_chairman
+            if board_chairman:
+                club = board_chairman.club
+                board_members = club.boardmembers.all()
+                serializer = self.get_serializer(
+                    board_members, many=True)
+                return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(status=status.HTTP_404_NOT_FOUND)
+
+
+class ClubProfileAPIView(generics.RetrieveAPIView):
+    serializer_class = BoardMemberSerializer
+    queryset = Club.objects.all()
+
+    def get(self, request):
+        user = request.user
+        if user and user.student and user.student.boardmember:
+            boardmember = user.student.boardmember
+            club = boardmember.club
+            boardmembers = club.boardmembers.all()
+            serializer = self.get_serializer(boardmembers, many=True)
+            data = serializer.data
+
+            return Response(data)

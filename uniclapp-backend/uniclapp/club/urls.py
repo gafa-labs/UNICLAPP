@@ -18,6 +18,8 @@ urlpatterns = [
          name="club_leader_board"),
     path("club/boardmembers/", views.ClubBoardMemberListAPIView.as_view(),
          name="club-boardmembers"),
+    path("club/profile/", views.ClubProfileAPIView.as_view(),
+         name="club-profile"),
 
 
 
