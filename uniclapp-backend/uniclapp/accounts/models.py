@@ -70,7 +70,7 @@ class Student(models.Model):
     department = models.TextField(choices=enums.DepartmentNames.choices)
     student_id = models.CharField(max_length=8, unique=True)
     hes_code = models.CharField(
-        max_length=10, unique=True, blank=True, null=True)
+        max_length=12, unique=True, blank=True, null=True)
     ge_point = models.IntegerField(default=0)
 
     def __str__(self):
