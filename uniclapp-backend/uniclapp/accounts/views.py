@@ -2,7 +2,7 @@ from rest_framework import generics
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 from accounts import serializers
-from accounts.serializers import LoginSerializer, StudentRegisterSerializer, OEMSerializer, BoardMemberSerializer
+from accounts.serializers import LoginSerializer, StudentRegisterSerializer, OEMSerializer, BoardMemberSerializer, ChangePasswordSerializer
 from django.contrib.auth import login, logout
 from rest_framework import status
 from rest_framework.authtoken.models import Token
@@ -85,7 +85,8 @@ class LoginAPIView(generics.CreateAPIView):
                     type = "student"
             except:
                 type = "oem"
-            response = {"data": data, "token": token, "type": type}
+            response = {"data": data, "token": token,
+                        "type": type, "id": user.id}
 
             return Response(response)
         else:
@@ -152,3 +153,10 @@ class PromoteStudentAPIView(generics.CreateAPIView):
 class DemoteStudentAPIView(generics.DestroyAPIView):
     serializer_class = BoardMemberSerializer
     queryset = models.BoardMember.objects.all()
+
+
+class ChangePasswordView(generics.UpdateAPIView):
+
+    queryset = models.User.objects.all()
+    permission_classes = (IsAuthenticated,)
+    serializer_class = ChangePasswordSerializer
