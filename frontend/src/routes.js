@@ -34,7 +34,10 @@ const beforeOem = function(to, from, next) {
 
 const checkBoardMember = function(to, from, next) {
   if (localStorage.getItem("status") == "true") {
-    if (JSON.parse(localStorage.getItem("user")).type == "boardmember") {
+    if (
+      (JSON.parse(localStorage.getItem("user")).type == "boardmember") |
+      (JSON.parse(localStorage.getItem("user")).type == "boardchairman")
+    ) {
       next();
     } else {
       next("/profile");
