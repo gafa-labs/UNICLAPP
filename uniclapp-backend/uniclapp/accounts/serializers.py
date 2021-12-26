@@ -140,8 +140,6 @@ class HESCodeSerializer(serializers.ModelSerializer):
         return attrs
 
     def update(self, instance, validated_data):
-
-        instance.hes_code = validated_data['hes_code']
+        instance.hes_code = validated_data.get("hes_code", instance.hes_code)
         instance.save()
-
         return instance
