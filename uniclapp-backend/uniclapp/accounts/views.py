@@ -70,7 +70,23 @@ class LoginAPIView(generics.CreateAPIView):
             login(request, user)
             data["message"] = "user logged in"
             data["email_address"] = user.email
-            response = {"data": data, "token": token}
+
+            type = ""
+            try:
+                flag = user.student
+                try:
+                    flag = user.student.boardmember
+                    try:
+                        flag = user.student.boardmember.board_chairman
+                        type = "boardchairman"
+                    except:
+                        type = "boardmember"
+                except:
+                    type = "student"
+            except:
+                type = "oem"
+            response = {"data": data, "token": token, "type": type}
+
             return Response(response)
         else:
             raise ValidationError({"400": f'User does not exist'})
