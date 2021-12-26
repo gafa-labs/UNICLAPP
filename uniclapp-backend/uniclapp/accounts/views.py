@@ -101,7 +101,7 @@ class StudentProfileAPIView(generics.RetrieveAPIView):
 
 
 class PromoteStudentAPIView(generics.CreateAPIView):
-    serializer_class = BoardMemberSerializer
+    serializer_class = BasicBoardMemberSerializer
     queryset = models.BoardMember.objects.all()
 
     def post(self, request):
@@ -125,9 +125,10 @@ class PromoteStudentAPIView(generics.CreateAPIView):
                                 user=user, student_id=student_id)
                             if student == candidate_student:
                                 if not models.BoardMember.objects.filter(student=student, club=club):
-                                    boardmember = models.BoardMember.objects.get_or_create(
+                                    boardmember = models.BoardMember.objects.create(
                                         student=student, club=club)
-                                    return Response(status=status.HTTP_201_CREATED)
+
+                                    return Response(boardmember.id, status=status.HTTP_201_CREATED)
                         return Response(status=status.HTTP_400_BAD_REQUEST)
         return Response(status=status.HTTP_404_NOT_FOUND)
 
