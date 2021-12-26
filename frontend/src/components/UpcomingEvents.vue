@@ -12,7 +12,7 @@
       <v-tabs color="deep-blue accent-4" v-model="tab">
         <v-tabs-slider color="blue"></v-tabs-slider>
         <v-tab>All</v-tab>
-        <v-tab>Followings</v-tab>
+        <v-tab disabled>Followings</v-tab>
       </v-tabs>
       <v-tabs-items v-model="tab">
         <v-tab-item>
@@ -57,6 +57,7 @@
                       style="position: absolute; bottom:20px;"
                       color="deep-orange lighten-1"
                       text
+                      @click="showDetail(event)"
                       >Details</v-btn
                     >
                   </v-col>
@@ -67,7 +68,7 @@
                       color="red lighten-1"
                       text
                       v-if="event.status === 'attending'"
-                      @click="event.status = 'not attending'"
+                      @click="cancelEnrollment(event)"
                       >Cancel</v-btn
                     >
                     <v-btn
@@ -75,7 +76,7 @@
                       color="green lighten-1"
                       text
                       v-if="event.status === 'not attending'"
-                      @click="event.status = 'attending'"
+                      @click="enrollEvent(event)"
                       >Attend</v-btn
                     >
                   </v-col>
@@ -117,7 +118,9 @@
                   <v-row class="mt-6 text-h6"
                     >Location: {{ event.location }}</v-row
                   >
-                  <v-row class="mt-2 text-h6">Date: {{ event.date }}</v-row>
+                  <v-row class="mt-2 text-h6"
+                    >Date: {{ formatDate(event.date) }}</v-row
+                  >
                   <v-row class="mt-2 text-h6">Time: </v-row>
                 </v-card-text>
                 <v-row style="position: relative;">
@@ -126,6 +129,8 @@
                       style="position: absolute; bottom:20px;"
                       color="deep-orange lighten-1"
                       text
+                      @click="showDetail(event)"
+                      @click.stop="detailDialog = true"
                       >Details</v-btn
                     >
                   </v-col>
@@ -155,6 +160,37 @@
         </v-tab-item>
       </v-tabs-items>
     </v-card>
+    <v-dialog v-model="detailDialog" max-width="500">
+      <v-card>
+        <v-card-title class="text-h5 mb-3">
+          Event Result
+        </v-card-title>
+
+        <v-card-text class="pl-9">
+          <v-row class="text-subtitle-1"> Name: {{ showedEvent.name }} </v-row>
+          <v-row class="text-subtitle-1">
+            Description: {{ showedEvent.description }}
+          </v-row>
+          <v-row class="text-subtitle-1">
+            Location: {{ showedEvent.location }}
+          </v-row>
+          <v-row class="text-subtitle-1">
+            Date: {{ formatDate(showedEvent) }}
+          </v-row>
+          <v-row class="text-subtitle-1"> Rate: {{ showedEvent.rate }} </v-row>
+          <v-row class="text-subtitle-1">
+            Number of Participants: {{ showedEvent.participants }}
+          </v-row>
+        </v-card-text>
+
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="green darken-1" text @click="detailDialog = false">
+            Close
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>
 <script>
@@ -162,6 +198,14 @@ import axios from "axios";
 export default {
   data() {
     return {
+      header: {
+        headers: {
+          Authorization:
+            "Token " + JSON.parse(localStorage.getItem("user")).token
+        }
+      },
+      detailDialog: false,
+      showedEvent: {},
       search: "",
       followingClubsEvents: [
         {
@@ -221,93 +265,42 @@ export default {
           status: "attending"
         }
       ],
-      allClubsEvents: [
-        {
-          club: "ACM Bilkent Club",
-          name: "event1",
-          description: "description2",
-          location: "location2",
-          date: "date2",
-          status: "attending"
-        },
-        {
-          club: "ACM Bilkent Club",
-          name: "event2",
-          description: "description2",
-          location: "location2",
-          date: "date2",
-          status: "not attending"
-        },
-        {
-          club: "ACM Bilkent Club",
-          name: "event3",
-          description: "description2",
-          location: "location2",
-          date: "date2",
-          status: "attending"
-        },
-        {
-          club: "ACM Bilkent Club",
-          name: "event4",
-          description: "description2",
-          location: "location2",
-          date: "date2",
-          status: "not attending"
-        },
-        {
-          club: "ACM Bilkent Club",
-          name: "event5",
-          description: "description2",
-          location: "location2",
-          date: "date2",
-          status: "not attending"
-        },
-        {
-          club: "ACM Bilkent Club",
-          name: "event6",
-          description: "description2",
-          location: "location2",
-          date: "date2",
-          status: "not attending"
-        },
-        {
-          club: "ACM Bilkent Club",
-          name: "event7",
-          description: "description2",
-          location: "location2",
-          date: "date2",
-          status: "not attending"
-        },
-        {
-          club: "ACM Bilkent Club",
-          name: "event8",
-          description: "description2",
-          location: "location2",
-          date: "date2",
-          status: "not attending"
-        },
-        {
-          club: "ACM Bilkent Club",
-          name: "event9",
-          description: "description2",
-          location: "location2",
-          date: "date2",
-          status: "not attending"
-        },
-        {
-          club: "ACM Bilkent Club",
-          name: "event10",
-          description: "description2",
-          location: "location2",
-          date: "date2",
-          status: "not attending"
-        }
-      ],
+      allClubsEvents: [],
       tab: null,
       sortElements: ["Followers", "Rate", "Events", "Participants"]
     };
   },
   methods: {
+    enrollEvent(event) {
+      event.status = "attending";
+      axios
+        .get(
+          "http://127.0.0.1:8000/api/events/" + event.id + "/enroll/",
+          this.header
+        )
+        .then(response => {});
+    },
+    cancelEnrollment(event) {
+      event.status = "not attending";
+      axios
+        .get(
+          "http://127.0.0.1:8000/api/events/" +
+            event.id +
+            "/cancel-enrollment/",
+          this.header
+        )
+        .then(response => {});
+    },
+    showDetail(item) {
+      this.detailDialog = true;
+      this.showedEvent = item;
+    },
+    formatDate(item) {
+      if (item.date) {
+        return item.date.toLocaleString();
+      }
+      return "";
+    },
     searched(events) {
       if (this.search === "") {
         return events;
@@ -315,37 +308,48 @@ export default {
       return events.filter(event => {
         return event.name.toLowerCase().includes(this.search.toLowerCase());
       });
+    },
+    displayEvents(response) {
+      response.forEach(event => {
+        if (event.is_online) {
+          event.location = "Zoom";
+        }
+        var eventDate = new Date(event.start_datetime);
+        var eventHour = eventDate.getHours().toString();
+        var eventMinutes = eventDate.getMinutes().toString();
+        if (eventMinutes.length == 1) {
+          eventMinutes = "0" + eventMinutes;
+        }
+        if (eventHour.length == 1) {
+          eventHour = "0" + eventHour;
+        }
+        event.time = eventHour + "." + eventMinutes;
+        event.date = eventDate.toLocaleDateString();
+        var newEvent = JSON.parse(JSON.stringify(event));
+        axios
+          .get("http://127.0.0.1:8000/api/clubs/" + event.club + "/")
+          .then(club => {
+            newEvent.club = club.data.name;
+          })
+          .catch(er => console.log(er));
+
+        this.allClubsEvents.push(newEvent);
+      });
     }
   },
   created() {
     axios
-      .get("http://127.0.0.1:8000/api/events/")
+      .get("http://127.0.0.1:8000/api/events/all-upcoming-events/", this.header)
       .then(response => {
-        response.data.map(event => {
-          if (event.is_online) {
-            event.location = "Zoom";
+        this.displayEvents(response.data.all_upcoming_events);
+        var enrolled = response.data.enrolled_events;
+        this.allClubsEvents.forEach(event => {
+          if (enrolled.includes(event.id)) {
+            this.$set(event, "status", "attending");
+          } else {
+            this.$set(event, "status", "not attending");
           }
-          console.log(event);
-          var eventDate = new Date(event.datetime);
-          var eventHour = eventDate.getHours().toString();
-          var eventMinutes = eventDate.getMinutes().toString();
-          if (eventMinutes.length == 1) {
-            eventMinutes = "0" + eventMinutes;
-          } else if (eventHour.length == 1) {
-            eventHour = "0" + eventHour;
-          }
-          var eventTime = eventHour + "." + eventMinutes;
-          var eventDay = eventDate.toLocaleDateString();
-          event.date = eventDay;
-          event.time = eventTime;
-          axios
-            .get("http://127.0.0.1:8000/api/clubs/" + event.club + "/")
-            .then(club => {
-              event.club = club.data.name;
-            })
-            .catch(er => console.log(er));
         });
-        this.allClubsEvents = response.data;
       })
       .catch(e => console.log(e));
   }

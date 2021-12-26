@@ -58,7 +58,7 @@
       item-key="name"
       :search="search"
     >
-      <template v-slot:item.status="{ item }">
+      <template v-slot:[`item.status`]="{ item }">
         <v-btn
           color="red lighten-1"
           rounded
@@ -76,6 +76,12 @@ import axios from "axios";
 export default {
   data() {
     return {
+      header: {
+        headers: {
+          Authorization:
+            "Token " + JSON.parse(localStorage.getItem("user")).token
+        }
+      },
       selectedAll: true,
       categories: [
         "Business",
@@ -86,36 +92,7 @@ export default {
       ],
       selected: ["Business", "Software", "Science", "Hobbies", "Entertainment"],
       search: "",
-      followingClubs: [
-        {
-          name: "Management and Economics Society",
-          category: ["Business"],
-          followers: "6889",
-          rate: "4.6",
-          status: "following"
-        },
-        {
-          name: "Astronomy Society",
-          category: ["Science,Hobbies"],
-          followers: "1276",
-          rate: "4.7",
-          status: "following"
-        },
-        {
-          name: "E-Sport Society",
-          category: ["Entertainment,Hobbies"],
-          followers: "2036",
-          rate: "4.2",
-          status: "following"
-        },
-        {
-          name: "Science Fiction and Fantasy Society",
-          category: ["Entertainment,Hobbies"],
-          followers: "891",
-          rate: "4.3",
-          status: "following"
-        }
-      ]
+      followingClubs: []
     };
   },
   computed: {
@@ -130,10 +107,9 @@ export default {
           text: "Category",
           value: "category",
           filter: value => {
-            var arr = value[0].split(",");
             var check = false;
             this.selected.forEach(item => {
-              if (arr.includes(item)) {
+              if (value === item.toLowerCase()) {
                 check = true;
               }
             });
@@ -142,7 +118,7 @@ export default {
         },
         {
           text: "Followers",
-          value: "followers"
+          value: "number_of_followers"
         },
         {
           text: "Rate",
@@ -171,13 +147,32 @@ export default {
     },
     unfollow(item) {
       item.status = "unfollowing";
+      axios
+        .get(
+          "http://127.0.0.1:8000/api/clubs/followings/unfollow/" +
+            item.id +
+            "/",
+          this.header
+        )
+        .then(response => {})
+        .catch(e => console.log(e));
       for (var i = 0; i < this.followingClubs.length; i++) {
-        if (this.followingClubs[i] === item) {
+        if (this.followingClubs[i].status === "unfollowing") {
           this.followingClubs.splice(i, 1);
         }
       }
     }
   },
-  created() {}
+  created() {
+    axios
+      .get("http://127.0.0.1:8000/api/clubs/followings/", this.header)
+      .then(response => {
+        response.data.forEach(club => {
+          club.status = "following";
+          this.followingClubs.push(club);
+        });
+      })
+      .catch(e => console.log(e));
+  }
 };
 </script>

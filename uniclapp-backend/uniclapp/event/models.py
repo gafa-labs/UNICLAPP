@@ -1,5 +1,4 @@
 from django.db import models
-from django.db.models.deletion import SET_NULL
 from event import enums
 from django.utils import timezone
 from django.core.validators import MinValueValidator, MaxValueValidator
@@ -7,19 +6,16 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 
 class Event(models.Model):
     name = models.CharField(max_length=100)
-    category = models.TextField(choices=enums.EventTypes.choices)
-    event_status = models.TextField(choices=enums.EventStatus.choices)
+    event_status = models.TextField(
+        choices=enums.EventStatus.choices, default=enums.EventStatus.pending)
     club = models.ForeignKey(
-        "club.Club", on_delete=models.CASCADE, related_name="%(class)s_events")
-    about = models.TextField()
+        "club.Club", on_delete=models.CASCADE, related_name="events")
+    description = models.TextField()
     ge_status = models.BooleanField(default=False)
     ge_point = models.IntegerField(default="10")
-    duration = models.FloatField(default=0)
-    capacity = models.IntegerField(default=0)
     is_online = models.BooleanField(default=False)
     zoom_link = models.URLField(blank=True)
-    building = models.ForeignKey(
-        "place.Building", on_delete=SET_NULL, blank=True, null=True)
+    location = models.TextField()
     start_datetime = models.DateTimeField()
     end_datetime = models.DateTimeField()
     rate = models.FloatField(default=0, validators=[
@@ -27,28 +23,29 @@ class Event(models.Model):
 
     @property
     def is_past(self):
-        if self.datetime < timezone.now():
+        if self.end_datetime > timezone.now():
             return True
         return False
 
-    def calculate_average_rate(self):
-        average = self.rate / len(self.evaluations)
-        self.rate = average
-        self.save(update_fields=["rate"])
+    @property
+    def number_of_participants(self):
+        return len(self.enrolled_students.all())
 
     def __str__(self):
         return f'{self.name} - {self.club.name}'
 
 
 class EventEnrollment(models.Model):
-    student = models.OneToOneField(
-        "accounts.Student", on_delete=models.CASCADE, related_name="enrolled_students")
-    event = models.OneToOneField(
-        Event, on_delete=models.CASCADE, related_name="enrolled_events")
+    student = models.ForeignKey(
+        "accounts.Student", on_delete=models.CASCADE, related_name="enrolled_events")
+    event = models.ForeignKey(
+        Event, on_delete=models.CASCADE, related_name="enrolled_students")
     created = models.DateTimeField(auto_now_add=True)
+    rate = models.IntegerField(default=0, validators=[
+                               MinValueValidator(0), MaxValueValidator(5)])
 
     class Meta:
         ordering = ["-created"]
 
     def __str__(self):
-        return f'{self.student_student.id} - {self.event.name}'
+        return f'{self.student.student_id} - {self.event.name}'

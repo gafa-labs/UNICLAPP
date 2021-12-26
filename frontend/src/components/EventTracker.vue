@@ -33,11 +33,10 @@
             ref="calendar"
             v-model="focus"
             color="primary"
-            :events="seenEvents"
+            :events="allEvents"
             event-color="blue"
             :type="type"
             @click:event="showEvent"
-            @change="updateRange"
           ></v-calendar>
           <!-- <v-menu
             v-model="selectedOpen"
@@ -75,29 +74,43 @@
   </v-container>
 </template>
 <script>
+import axios from "axios";
 export default {
   data() {
     return {
+      colors: [
+        "blue",
+        "indigo",
+        "deep-purple",
+        "cyan",
+        "green",
+        "orange",
+        "grey darken-1"
+      ],
+      start: "",
+      end: "",
+      header: {
+        headers: {
+          Authorization:
+            "Token " + JSON.parse(localStorage.getItem("user")).token
+        }
+      },
       focus: "",
       type: "month",
       selectedEvent: {},
       selectedElement: null,
       selectedOpen: false,
-      allEvents: [
-        {
-          name: "eveneeeeeeet1",
-          start: new Date(2021, 11, 22, 15, 15),
-          end: new Date(2021, 11, 22),
-          timed: true
-        }
-      ],
-      seenEvents: []
+      allEvents: []
+      // seenEvents: []
     };
   },
   mounted() {
     this.$refs.calendar.checkChange();
   },
   methods: {
+    rnd(a, b) {
+      return Math.floor((b - a + 1) * Math.random()) + a;
+    },
     setToday() {
       this.focus = "";
     },
@@ -124,19 +137,26 @@ export default {
       }
 
       nativeEvent.stopPropagation();
-    },
-    updateRange({ start, end }) {
-      const events = [];
-      const min = new Date(`${start.date}T00:00:00`);
-      const max = new Date(`${end.date}T23:59:59`);
-
-      this.allEvents.forEach(element => {
-        if (element.start >= min || element.end <= max) {
-          events.push(element);
-        }
-      });
-      this.seenEvents = events;
     }
+  },
+  created() {
+    axios
+      .get("http://127.0.0.1:8000/api/events/event-tracker/", this.header)
+      .then(response => {
+        var events = response.data;
+        var item = {};
+        events.forEach(event => {
+          item = {
+            name: event.name,
+            start: new Date(event.start_datetime),
+            end: new Date(event.end_datetime),
+            timed: false,
+            color: this.colors[this.rnd(0, this.colors.length - 1)]
+          };
+          this.allEvents.push(item);
+        });
+      })
+      .catch(e => console.log(e));
   }
 };
 </script>

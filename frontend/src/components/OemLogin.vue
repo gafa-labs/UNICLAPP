@@ -14,8 +14,9 @@
 
                 <v-form>
                   <v-text-field
-                    label="Username"
-                    name="username"
+                    label="E-mail"
+                    name="email"
+                    v-model="information.email"
                     prepend-icon="mdi-account"
                     type="text"
                     color="light-blue darken-3"
@@ -23,6 +24,7 @@
                   <v-text-field
                     label="Password"
                     name="password"
+                    v-model="information.password"
                     prepend-icon="mdi-lock"
                     :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
                     :type="showPassword ? 'text' : 'password'"
@@ -48,17 +50,35 @@
   </v-container>
 </template>
 <script>
+import axios from "axios";
 export default {
   data() {
     return {
+      information: { email: "", password: "" },
       step: 1,
       showPassword: false
     };
   },
   methods: {
     goToMainPage() {
-      this.$router.push("/oemMain");
+      axios
+        .post("http://localhost:8000/api/login/", this.information)
+        .then(response => {
+          localStorage.setItem("user", JSON.stringify(response.data));
+          localStorage.setItem("OEMStatus", true);
+          this.$router.push("/oemMain");
+        })
+        .catch(e => {
+          if (e.response.status == 400) {
+            alert("Email or password is incorrect. Please try again!");
+            return;
+          }
+        });
     }
+  },
+  created() {
+    this.$store.state.isLoggedIn = false;
+    localStorage.setItem("status", false);
   }
 };
 </script>

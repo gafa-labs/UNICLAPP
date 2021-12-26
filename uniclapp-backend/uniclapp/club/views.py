@@ -1,16 +1,12 @@
-from django.db.models.query import QuerySet
-from django.http.request import validate_host
-from django.shortcuts import render
-from rest_framework import generics, mixins, permissions, status, viewsets
+from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.exceptions import ValidationError
-from club import serializers
 from club.models import Club, ClubFollowing
 from club.serializers import ClubSerializer
-from accounts.models import Student
-from accounts.serializers import StudentSerializer
 from club import utils
-from club.serializers import ClubFollowingSerializer
+from club.serializers import BasicClubSerializer, ClubFollowingSerializer, ClubLeaderBoardSerializer, ClubProfileSerializer
+from accounts.serializers import BoardMemberSerializer
+from accounts.models import BoardMember
 
 
 class ClubListAPIView(generics.ListAPIView):
@@ -24,8 +20,8 @@ class ClubDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
     lookup_field = 'pk'
 
 
-class FollowingClubAPIView(generics.RetrieveAPIView):
-    serializer_class = ClubFollowingSerializer
+class ClubExploreAPIView(generics.RetrieveAPIView):
+    serializer_class = BasicClubSerializer
     queryset = Club.objects.all()
 
     def get(self, request):
@@ -44,3 +40,106 @@ class FollowingClubAPIView(generics.RetrieveAPIView):
             else:
                 return ValidationError({"student": "student does not exists!"})
         return ValidationError({"user": "user does not exists!"})
+
+
+class ClubFollowingsAPIView(generics.RetrieveAPIView):
+    serializer_class = BasicClubSerializer
+    queryset = Club.objects.all()
+
+    def get(self, request):
+        user = request.user
+        if user:
+            student = user.student
+            if student:
+                following_clubs = utils.get_following_club_list(student.id)
+                queryset = Club.objects.filter(id__in=following_clubs)
+                serializer = self.get_serializer(queryset, many=True)
+                return Response(serializer.data)
+
+
+class ClubFollowingsFollowAPIView(generics.RetrieveAPIView):
+    serializer_class = ClubFollowingSerializer
+    queryset = Club.objects.all()
+
+    def get(self, request, pk):
+        user = request.user
+        if user:
+            student = user.student
+            if student:
+                club = Club.objects.get(id=pk)
+                if not ClubFollowing.objects.filter(student=student, club=club).exists():
+                    club_following = utils.follow_club(student.id, club.id)
+                    serializer = ClubFollowingSerializer(club_following)
+                    return Response(serializer.data)
+                return Response(status=status.HTTP_400_BAD_REQUEST)
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+
+class ClubFollowingsUnfollowAPIView(generics.RetrieveAPIView):
+    serializer_class = ClubFollowingSerializer
+    queryset = Club.objects.all()
+
+    def get(self, request, pk):
+        user = request.user
+        if user:
+            student = user.student
+            if student:
+                club = Club.objects.get(id=pk)
+                if ClubFollowing.objects.filter(student=student, club=club).exists():
+                    utils.unfollow_club(student.id, club.id)
+                    return Response(status=status.HTTP_200_OK)
+                return Response(status=status.HTTP_404_NOT_FOUND)
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+
+class LeaderBoardAPIView(generics.ListAPIView):
+    serializer_class = ClubLeaderBoardSerializer
+    queryset = Club.objects.all()
+
+
+class ClubBoardMemberListAPIView(generics.ListAPIView):
+    serializer_class = BoardMemberSerializer
+    queryset = BoardMember.objects.all()
+
+    def get(self, request):
+        user = request.user
+        if user and user.student and user.student.boardmember:
+            board_chairman = user.student.boardmember.board_chairman
+            if board_chairman:
+                club = board_chairman.club
+                board_members = club.boardmembers.all()
+                serializer = self.get_serializer(
+                    board_members, many=True)
+                return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+
+class ClubProfileAPIView(generics.RetrieveAPIView):
+    serializer_class = BoardMemberSerializer
+    queryset = Club.objects.all()
+
+    def get(self, request):
+        user = request.user
+        if user and user.student and user.student.boardmember:
+            boardmember = user.student.boardmember
+            club = boardmember.club
+            boardmembers = club.boardmembers.all()
+            serializer = self.get_serializer(boardmembers, many=True)
+            data = serializer.data
+
+            return Response(data)
+
+
+class ClubProfileUpdateAPIView(generics.UpdateAPIView):
+    serializer_class = ClubProfileSerializer
+    queryset = Club.objects.all()
+
+    def put(self, request, pk):
+        club = Club.objects.get(pk=pk)
+        serializer = ClubProfileSerializer(club, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

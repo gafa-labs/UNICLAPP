@@ -70,7 +70,7 @@ class Student(models.Model):
     department = models.TextField(choices=enums.DepartmentNames.choices)
     student_id = models.CharField(max_length=8, unique=True)
     hes_code = models.CharField(
-        max_length=10, unique=True, blank=True, null=True)
+        max_length=12, unique=True, blank=True, null=True)
     ge_point = models.IntegerField(default=0)
 
     def __str__(self):
@@ -79,8 +79,8 @@ class Student(models.Model):
 
 class BoardMember(models.Model):
     student = models.OneToOneField(
-        Student, on_delete=models.CASCADE, related_name="%(class)s_user")
-    club = models.OneToOneField(
+        Student, on_delete=models.CASCADE, related_name="boardmember")
+    club = models.ForeignKey(
         "club.Club", on_delete=models.CASCADE, related_name="boardmembers")
 
     def __str__(self):
@@ -88,16 +88,18 @@ class BoardMember(models.Model):
 
 
 class BoardChairman(models.Model):
-    student = models.OneToOneField(
-        Student, on_delete=models.CASCADE, related_name="%(class)s_user")
+    boardmember = models.OneToOneField(
+        BoardMember, on_delete=models.CASCADE, related_name="board_chairman")
+    club = models.OneToOneField(
+        "club.Club", on_delete=models.CASCADE, related_name="chairman", null=True, blank=True)
 
     def __str__(self):
-        return self.student.user.full_name
+        return self.boardmember.student.user.full_name
 
 
 class ClubAdvisor(models.Model):
     user = models.OneToOneField(
-        User, on_delete=models.CASCADE, related_name="%(class)s_user")
+        User, on_delete=models.CASCADE, related_name="club_advisor")
     club = models.OneToOneField(
         "club.Club", on_delete=models.CASCADE, related_name="club")
 
@@ -107,7 +109,7 @@ class ClubAdvisor(models.Model):
 
 class OEM(models.Model):
     user = models.OneToOneField(
-        User, on_delete=models.CASCADE, related_name="%(class)s_user")
+        User, on_delete=models.CASCADE, related_name="oem")
 
     def __str__(self):
         return self.user.full_name
@@ -121,7 +123,6 @@ class PSIScore(models.Model):
     def __str__(self):
         return f'{self.student.user.full_name} - {self.score}'
 
-    # TODO
     def update_score(self):
         pass
 

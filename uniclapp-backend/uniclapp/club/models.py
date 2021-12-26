@@ -1,19 +1,39 @@
 from django.db import models
-from django.db.models.deletion import CASCADE
 from club import enums
-from django.core.validators import MinValueValidator, MaxValueValidator
 
 
 class Club(models.Model):
     name = models.CharField(max_length=100)
     about = models.TextField()
-    rate = models.FloatField(default=0, validators=[
-        MinValueValidator(0), MaxValueValidator(5)])
     category = models.CharField(max_length=20, choices=enums.ClubTypes.choices)
 
     @property
     def number_of_followers(self):
         return len(self.followers.all())
+
+    @property
+    def number_of_events(self):
+        return len(self.events.all())
+
+    @property
+    def number_of_total_participants(self):
+        all_events = self.events.all()
+        number_of_participants = 0
+        for event in all_events:
+            event_participants = len(event.enrolled_students.all())
+            number_of_participants += event_participants
+        return number_of_participants
+
+    @property
+    def rate(self):
+        all_events = self.events.all()
+        total_event_rate = 0
+        for event in all_events:
+            total_event_rate += event.rate
+        if self.number_of_total_participants != 0:
+            return total_event_rate / self.number_of_total_participants
+        else:
+            return 0.0
 
     class Meta:
         ordering = ["name"]

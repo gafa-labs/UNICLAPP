@@ -4,33 +4,28 @@
     <v-row class="text-h5 mt-16 mb-6 font-weight-bold"
       >Your Club's Past Events</v-row
     >
-    <v-row>
-      <v-data-table
-        :headers="headers"
-        :items="pastEvents"
-        outlined
-        class="elevation-4"
-        item-key="name"
-        sort-by="date"
-      >
-        <template v-slot:item.description="{ item }">
-          {{ truncateString(item.description) }}
-        </template>
-        <template v-slot:item.date="{ item }">
-          {{ formatDate(item) }}
-        </template>
-        <template v-slot:item.result="{ item }">
-          <v-btn
-            color="red lighten-1"
-            rounded
-            small
-            @click="showResult(item)"
-            @click.stop="resultDialog = true"
-            >Show</v-btn
-          >
-        </template>
-      </v-data-table>
-    </v-row>
+    <v-data-table
+      :headers="headers"
+      :items="pastEvents"
+      class="elevation-1"
+      item-key="name"
+      sort-by="date"
+    >
+      <template v-slot:[`item.description`]="{ item }">
+        {{ truncateString(item.description) }}
+      </template>
+      <template v-slot:[`item.result`]="{ item }">
+        <v-btn
+          color="green lighten-1"
+          rounded
+          small
+          @click="showResult(item)"
+          @click.stop="resultDialog = true"
+          >Show</v-btn
+        >
+      </template>
+    </v-data-table>
+
     <v-dialog v-model="resultDialog" max-width="500">
       <v-card>
         <v-card-title class="text-h5 mb-3">
@@ -38,25 +33,30 @@
         </v-card-title>
 
         <v-card-text class="pl-9">
-          <v-row class="text-subtitle-1"> Name: {{ showedEvent.name }} </v-row>
           <v-row class="text-subtitle-1">
-            Description: {{ showedEvent.description }}
+            <strong>Name: </strong> {{ showedEvent.name }}
+          </v-row>
+          <v-row class="text-subtitle-1 ">
+            <strong>Description: </strong> {{ showedEvent.description }}
           </v-row>
           <v-row class="text-subtitle-1">
-            Location: {{ showedEvent.location }}
+            <strong>Location: </strong> {{ showedEvent.location }}
           </v-row>
           <v-row class="text-subtitle-1">
-            Date: {{ formatDate(showedEvent) }}
+            <strong>Date: </strong> {{ showedEvent.start_datetime }}
           </v-row>
-          <v-row class="text-subtitle-1"> Rate: {{ showedEvent.rate }} </v-row>
           <v-row class="text-subtitle-1">
-            Number of Participants: {{ showedEvent.participants }}
+            <strong>Rate: </strong> {{ showedEvent.rate }}
+          </v-row>
+          <v-row class="text-subtitle-1">
+            <strong>Number of Participants: </strong>
+            {{ showedEvent.number_of_participants }}
           </v-row>
         </v-card-text>
 
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="green darken-1" text @click="resultDialog = false">
+          <v-btn color="red darken-1" text @click="resultDialog = false">
             Close
           </v-btn>
         </v-card-actions>
@@ -65,38 +65,19 @@
   </v-container>
 </template>
 <script>
+import axios from "axios";
 export default {
   data() {
     return {
+      header: {
+        headers: {
+          Authorization:
+            "Token " + JSON.parse(localStorage.getItem("user")).token
+        }
+      },
       resultDialog: false,
       showedEvent: {},
-      pastEvents: [
-        {
-          name: "Introductory Meeting",
-          description: "Descriptiiiiiioooooon",
-          location: "Mayfest Area",
-          date: new Date(2021, 8, 16, 15, 45),
-          rate: 4.3,
-          participants: 1200
-        },
-        {
-          name: "Introductory Meeting2",
-          description: "Descriptiiiiiioooooon",
-          location: "Mayfest Area",
-          date: new Date(2021, 8, 16, 15, 25),
-          rate: 2.3,
-          participants: 2344
-        },
-        {
-          name: "Fast & Curious Meeting",
-          description:
-            "DescriptaaaaaaaaaaiiiiiioooooonDescriptaaaaaaaaaaiiiiiioooooon",
-          location: "Cyberpark",
-          date: new Date(2022, 3, 6, 21, 45),
-          rate: 1.8,
-          participants: 19
-        }
-      ]
+      pastEvents: []
     };
   },
   computed: {
@@ -104,13 +85,13 @@ export default {
       return [
         {
           text: "Name",
-          align: "left",
+          align: "center",
           value: "name",
           sortable: false
         },
         {
           text: "Description",
-          align: "left",
+          align: "center",
           value: "description",
           sortable: false
         },
@@ -123,7 +104,7 @@ export default {
         {
           text: "Date",
           align: "center",
-          value: "date",
+          value: "start_datetime",
           sortable: false
         },
         {
@@ -152,6 +133,19 @@ export default {
         return str;
       }
     }
+  },
+  created() {
+    axios
+      .get("http://127.0.0.1:8000/api/events/results/", this.header)
+      .then(response => {
+        response.data.forEach(event => {
+          event.start_datetime = new Date(
+            event.start_datetime
+          ).toLocaleString();
+          this.pastEvents.push(event);
+        });
+      })
+      .catch(e => console.log(e));
   }
 };
 </script>

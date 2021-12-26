@@ -1,7 +1,10 @@
 from django.core.exceptions import ValidationError
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
-from accounts.models import Student
+from accounts.models import Student, OEM, BoardMember
+from club.serializers import ClubSerializer
+from django.contrib.auth.password_validation import validate_password
+from accounts import utils
 
 User = get_user_model()
 
@@ -9,7 +12,24 @@ User = get_user_model()
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('id', 'email', "full_name")
+        fields = ["email", "full_name"]
+
+
+class OEMSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['email', 'password', "full_name", ]
+        extra_kwargs = {'password': {'write_only': True}}
+
+    def save(self):
+        if not User.objects.filter(email=self.validated_data["email"], password=self.validated_data["password"]).exists():
+            user = User.objects.create_user(
+                email=self.validated_data["email"], password=self.validated_data["password"],)
+            user.full_name = self.validated_data["full_name"]
+            user.save()
+            oem = OEM.objects.create(user=user)
+            return user
+        return ValidationError()
 
 
 class StudentRegisterSerializer(serializers.ModelSerializer):
@@ -54,13 +74,72 @@ class StudentRegisterSerializer(serializers.ModelSerializer):
 
 
 class StudentSerializer(serializers.ModelSerializer):
+    user = UserSerializer(read_only=True)
 
     class Meta:
         model = Student
-        fields = ["student_id", "department", "hes_code"]
+        fields = ["student_id", "department", "hes_code", "user"]
 
 
 class LoginSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ["email", "password"]
+
+
+class BoardMemberSerializer(serializers.ModelSerializer):
+    student = StudentSerializer(read_only=True)
+    club = ClubSerializer(read_only=True)
+
+    class Meta:
+        model = BoardMember
+        fields = "__all__"
+
+
+class ChangePasswordSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(
+        write_only=True, required=True, validators=[validate_password])
+    password2 = serializers.CharField(write_only=True, required=True)
+    old_password = serializers.CharField(write_only=True, required=True)
+
+    class Meta:
+        model = User
+        fields = ('old_password', 'password', 'password2')
+
+    def validate(self, attrs):
+        if attrs['password'] != attrs['password2']:
+            raise serializers.ValidationError(
+                {"password": "Password fields didn't match."})
+
+        return attrs
+
+    def validate_old_password(self, value):
+        user = self.context['request'].user
+        if not user.check_password(value):
+            raise serializers.ValidationError(
+                {"old_password": "Old password is not correct"})
+        return value
+
+    def update(self, instance, validated_data):
+
+        instance.set_password(validated_data['password'])
+        instance.save()
+
+        return instance
+
+
+class HESCodeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Student
+        fields = ["hes_code"]
+
+    def validate(self, attrs):
+        if not utils.validateHesCode(attrs["hes_code"]):
+            raise serializers.ValidationError(
+                {"hes_code": "HES Code is not valid!"})
+        return attrs
+
+    def update(self, instance, validated_data):
+        instance.hes_code = validated_data.get("hes_code", instance.hes_code)
+        instance.save()
+        return instance

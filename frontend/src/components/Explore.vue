@@ -84,6 +84,12 @@ import axios from "axios";
 export default {
   data() {
     return {
+      header: {
+        headers: {
+          Authorization:
+            "Token " + JSON.parse(localStorage.getItem("user")).token
+        }
+      },
       selectedAll: true,
       categories: [
         "Business",
@@ -107,7 +113,16 @@ export default {
         },
         {
           text: "Category",
-          value: "category"
+          value: "category",
+          filter: value => {
+            var check = false;
+            this.selected.forEach(item => {
+              if (value === item.toLowerCase()) {
+                check = true;
+              }
+            });
+            return check;
+          }
         },
         {
           text: "Followers",
@@ -141,21 +156,46 @@ export default {
     },
     follow(item) {
       item.status = "following";
+      item.number_of_followers++;
+      axios
+        .get(
+          "http://127.0.0.1:8000/api/clubs/followings/follow/" + item.id + "/",
+          this.header
+        )
+        .then(response => {})
+        .catch(e => console.log(e));
     },
     unfollow(item) {
       item.status = "unfollowing";
+      item.number_of_followers--;
+      axios
+        .get(
+          "http://127.0.0.1:8000/api/clubs/followings/unfollow/" +
+            item.id +
+            "/",
+          this.header
+        )
+        .then(response => {})
+        .catch(e => console.log(e));
+    },
+    displayClubs(response) {
+      var all_clubs = response.all_clubs;
+      var following_clubs = response.following_clubs;
+      all_clubs.forEach(club => {
+        if (following_clubs.includes(club.id)) {
+          club.status = "following";
+        } else {
+          club.status = "unfollowing";
+        }
+        this.clubs.push(club);
+      });
     }
   },
   created() {
     axios
-      .get("http://127.0.0.1:8000/api/clubs/")
+      .get("http://127.0.0.1:8000/api/clubs/explore/", this.header)
       .then(response => {
-        response.data.map(club => {
-          if (!club.number_of_followers) {
-            club.number_of_followers = 0;
-          }
-        });
-        this.clubs = response.data;
+        this.displayClubs(response.data);
       })
       .catch(e => console.log(e));
   }

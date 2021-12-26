@@ -2,18 +2,15 @@
   <div>
     <v-navigation-drawer app>
       <v-list>
-        <v-list-item style="justify-content: center;">
-          <v-list-item-avatar size="75%">
-            <v-img
-              src="https://randomuser.me/api/portraits/women/85.jpg"
-            ></v-img>
-          </v-list-item-avatar>
+        <v-list-item two-line style="justify-content: center;">
+          <v-icon x-large style="font-size: 150px">mdi-account</v-icon>
         </v-list-item>
 
         <v-list-item>
           <v-list-item-content>
-            <v-list-item-title>Name Surname</v-list-item-title>
-            <v-list-item-subtitle>PSI: 100</v-list-item-subtitle>
+            <v-list-item-title class="text-center" style="font-size: 28px">{{
+              information.name
+            }}</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
 
@@ -39,7 +36,9 @@
 
         <div
           v-if="
-            this.userStatus == 'Student' || this.userStatus == 'BoardMember'
+            this.userStatus == 'Student' ||
+              this.userStatus == 'BoardMember' ||
+              this.userStatus == 'BoardChairman'
           "
         >
           <router-link
@@ -61,7 +60,12 @@
 
         <v-divider></v-divider>
 
-        <div v-if="this.userStatus == 'BoardMember'">
+        <div
+          v-if="
+            this.userStatus == 'BoardMember' ||
+              this.userStatus == 'BoardChairman'
+          "
+        >
           <router-link
             v-for="item in boardMemberListItems"
             :key="item.title"
@@ -77,6 +81,23 @@
               <v-list-item-title>{{ item.title }}</v-list-item-title>
             </v-list-item-content>
           </router-link>
+          <div v-if="this.userStatus == 'BoardChairman'">
+            <router-link
+              v-for="item in boardChairmenListItems"
+              :key="item.title"
+              tag="v-list-item"
+              :to="item.path"
+              link
+            >
+              <v-list-item-icon>
+                <v-icon>{{ item.icon }}</v-icon>
+              </v-list-item-icon>
+
+              <v-list-item-content>
+                <v-list-item-title>{{ item.title }}</v-list-item-title>
+              </v-list-item-content></router-link
+            >
+          </div>
         </div>
       </v-list>
     </v-navigation-drawer>
@@ -101,10 +122,15 @@
 </template>
 
 <script>
+import axios from "axios";
 export default {
   data() {
     return {
-      userStatus: "BoardMember",
+      information: {
+        name: "",
+        psi: 98
+      },
+      userStatus: "",
       studentListItems: [
         { title: "Profile", icon: "mdi-account", path: "/profile" },
         { title: "Explore", icon: "mdi-magnify", path: "/explore" },
@@ -138,11 +164,6 @@ export default {
           title: "Event Result",
           icon: "mdi-calendar-check",
           path: "/eventResult"
-        },
-        {
-          title: "Rank Board Member",
-          icon: "mdi-arrow-up-down",
-          path: "/rankBoardMember"
         }
       ],
       clubAdvisorListItems: [
@@ -161,6 +182,13 @@ export default {
           icon: "mdi-calendar-check",
           path: "/eventResult"
         }
+      ],
+      boardChairmenListItems: [
+        {
+          title: "Rank Board Member",
+          icon: "mdi-arrow-up-down",
+          path: "/rankBoardMember"
+        }
       ]
     };
   },
@@ -170,6 +198,29 @@ export default {
       this.$router.push("/");
       this.$store.state.isLoggedIn = false;
     }
+  },
+  created() {
+    if (localStorage.getItem("status") === "true") {
+      var token = "Token " + JSON.parse(localStorage.getItem("user")).token;
+      axios
+        .get("http://localhost:8000/api/profiles/student/", {
+          headers: { Authorization: token }
+        })
+        .then(response => {
+          this.information = response.data;
+        })
+        .catch(e => console.log(e));
+    }
+    var status = JSON.parse(localStorage.getItem("user")).type;
+    if (status === "boardchairman") {
+      status = "BoardChairman";
+    } else if (status == "boardmember") {
+      status = "BoardMember";
+    } else if (status == "student") {
+      status = "Student";
+    }
+
+    this.userStatus = status;
   }
 };
 </script>

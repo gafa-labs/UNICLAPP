@@ -1,19 +1,16 @@
 from rest_framework import generics
-from rest_framework import permissions
-from rest_framework import response
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 from accounts import serializers
-from accounts.serializers import LoginSerializer, StudentRegisterSerializer
 from django.contrib.auth import login, logout
-from rest_framework import mixins, status
+from rest_framework import status
 from rest_framework.authtoken.models import Token
 from accounts import models
 from rest_framework.permissions import AllowAny, IsAuthenticated
 
 
 class StudentRegisterAPIView(generics.CreateAPIView):
-    serializer_class = StudentRegisterSerializer
+    serializer_class = serializers.StudentRegisterSerializer
     permission_classes = (AllowAny,)
 
     def post(self, request, *args, **kwargs):
@@ -31,8 +28,27 @@ class StudentRegisterAPIView(generics.CreateAPIView):
         return Response(data)
 
 
+class OEMRegisterAPIView(generics.CreateAPIView):
+    serializer_class = serializers.OEMSerializer
+    permission_classes = (AllowAny,)
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        data = {}
+        if serializer.is_valid():
+            user = serializer.save()
+            data["response"] = "successfully registered a new user"
+            data["email"] = user.email
+            data["full_name"] = user.full_name
+            token = Token.objects.get_or_create(user=user)[0].key
+            data["token"] = token
+        else:
+            raise ValidationError()
+        return Response(data)
+
+
 class LoginAPIView(generics.CreateAPIView):
-    serializer_class = LoginSerializer
+    serializer_class = serializers.LoginSerializer
     queryset = models.User.objects.all()
     permission_classes = (AllowAny,)
 
@@ -53,7 +69,24 @@ class LoginAPIView(generics.CreateAPIView):
             login(request, user)
             data["message"] = "user logged in"
             data["email_address"] = user.email
-            response = {"data": data, "token": token}
+
+            type = ""
+            try:
+                flag = user.student
+                try:
+                    flag = user.student.boardmember
+                    try:
+                        flag = user.student.boardmember.board_chairman
+                        type = "boardchairman"
+                    except:
+                        type = "boardmember"
+                except:
+                    type = "student"
+            except:
+                type = "oem"
+            response = {"data": data, "token": token,
+                        "type": type, "id": user.id}
+
             return Response(response)
         else:
             raise ValidationError({"400": f'User does not exist'})
@@ -68,9 +101,9 @@ class LogoutAPIView(generics.RetrieveAPIView):
         return Response(status=status.HTTP_200_OK)
 
 
-class StudentProfileAPIView(generics.RetrieveAPIView):
+class StudentProfileAPIView(generics.RetrieveUpdateAPIView):
     serializer_class = serializers.StudentSerializer
-    query_set = models.Student.objects.all()
+    queryset = models.Student.objects.all()
 
     def get(self, request):
         user = request.user
@@ -80,4 +113,56 @@ class StudentProfileAPIView(generics.RetrieveAPIView):
             data = serializer.data
             data["name"] = user.full_name
             data["email"] = user.email
+            data["id"] = user.id
             return Response(data)
+
+
+class PromoteStudentAPIView(generics.CreateAPIView):
+    serializer_class = serializers.BoardMemberSerializer
+    queryset = models.BoardMember.objects.all()
+
+    def post(self, request):
+        user = request.user
+        if user:
+            student = user.student
+            if student:
+                boardmember = student.boardmember
+                if boardmember:
+                    club = boardmember.club
+                    data = request.data
+                    full_name = data["student_name"]
+                    student_id = data["student_id"]
+                    email = data["email"]
+                    user = models.User.objects.get(
+                        email=email, full_name=full_name)
+                    if user:
+                        student = user.student
+                        if student:
+                            candidate_student = models.Student.objects.get(
+                                user=user, student_id=student_id)
+                            if student == candidate_student:
+                                if not models.BoardMember.objects.filter(student=student, club=club):
+                                    boardmember = models.BoardMember.objects.create(
+                                        student=student, club=club)
+
+                                    return Response(boardmember.id, status=status.HTTP_201_CREATED)
+                        return Response(status=status.HTTP_400_BAD_REQUEST)
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+
+class DemoteStudentAPIView(generics.DestroyAPIView):
+    serializer_class = serializers.BoardMemberSerializer
+    queryset = models.BoardMember.objects.all()
+
+
+class ChangePasswordView(generics.UpdateAPIView):
+
+    queryset = models.User.objects.all()
+    permission_classes = (IsAuthenticated,)
+    serializer_class = serializers.ChangePasswordSerializer
+
+
+class CheckHESCodeAPIView(generics.UpdateAPIView):
+    serializer_class = serializers.HESCodeSerializer
+    queryset = models.Student.objects.all()
+    lookup_field = 'pk'
