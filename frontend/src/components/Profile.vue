@@ -67,6 +67,7 @@
           <v-col cols="12" md="8">
             <v-text-field
               :value="information.hes_code"
+              v-model="information.hes_code"
               label="HES Code"
               outlined
               dense
@@ -75,7 +76,13 @@
             ></v-text-field>
           </v-col>
           <v-col cols="12" md="4">
-            <v-btn elevation="2" rounded color="green lighten-1">Submit</v-btn>
+            <v-btn
+              @click="submitHES"
+              elevation="2"
+              rounded
+              color="green lighten-1"
+              >Submit</v-btn
+            >
           </v-col>
         </v-row>
         <v-text-field
@@ -151,6 +158,21 @@ export default {
     };
   },
   methods: {
+    submitHES() {
+      console.log(this.information);
+      axios
+        .put(
+          "http://localhost:8000/api/profiles/student/" +
+            this.information.id +
+            "/update-hes/",
+          { hes_code: this.information.hes_code },
+          this.header
+        )
+        .then(response => {
+          console.log(response);
+        })
+        .catch(e => console.log(e));
+    },
     changePass() {
       if (
         (this.newPassword == "") |
@@ -191,6 +213,7 @@ export default {
       })
       .then(response => {
         this.information = response.data;
+        console.log(this.information);
       })
       .catch(e => console.log(e));
   }
