@@ -224,7 +224,7 @@ export default {
     },
     registerStudent() {
       axios
-        .post("http://localhost:8000/api/register/", this.register)
+        .post("http://localhost:8000/api/register/student/", this.register)
         .then(response => {
           this.step--;
         })

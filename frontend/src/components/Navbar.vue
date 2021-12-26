@@ -36,7 +36,9 @@
 
         <div
           v-if="
-            this.userStatus == 'Student' || this.userStatus == 'BoardMember'
+            this.userStatus == 'Student' ||
+              this.userStatus == 'BoardMember' ||
+              this.userStatus == 'BoardChairman'
           "
         >
           <router-link
@@ -58,7 +60,12 @@
 
         <v-divider></v-divider>
 
-        <div v-if="this.userStatus == 'BoardMember'">
+        <div
+          v-if="
+            this.userStatus == 'BoardMember' ||
+              this.userStatus == 'BoardChairman'
+          "
+        >
           <router-link
             v-for="item in boardMemberListItems"
             :key="item.title"
@@ -74,6 +81,23 @@
               <v-list-item-title>{{ item.title }}</v-list-item-title>
             </v-list-item-content>
           </router-link>
+          <div v-if="this.userStatus == 'BoardChairman'">
+            <router-link
+              v-for="item in boardChairmenListItems"
+              :key="item.title"
+              tag="v-list-item"
+              :to="item.path"
+              link
+            >
+              <v-list-item-icon>
+                <v-icon>{{ item.icon }}</v-icon>
+              </v-list-item-icon>
+
+              <v-list-item-content>
+                <v-list-item-title>{{ item.title }}</v-list-item-title>
+              </v-list-item-content></router-link
+            >
+          </div>
         </div>
       </v-list>
     </v-navigation-drawer>
@@ -106,7 +130,7 @@ export default {
         name: "",
         psi: 98
       },
-      userStatus: "BoardMember",
+      userStatus: "",
       studentListItems: [
         { title: "Profile", icon: "mdi-account", path: "/profile" },
         { title: "Explore", icon: "mdi-magnify", path: "/explore" },
@@ -140,11 +164,6 @@ export default {
           title: "Event Result",
           icon: "mdi-calendar-check",
           path: "/eventResult"
-        },
-        {
-          title: "Rank Board Member",
-          icon: "mdi-arrow-up-down",
-          path: "/rankBoardMember"
         }
       ],
       clubAdvisorListItems: [
@@ -162,6 +181,13 @@ export default {
           title: "Event Result",
           icon: "mdi-calendar-check",
           path: "/eventResult"
+        }
+      ],
+      boardChairmenListItems: [
+        {
+          title: "Rank Board Member",
+          icon: "mdi-arrow-up-down",
+          path: "/rankBoardMember"
         }
       ]
     };
@@ -185,6 +211,16 @@ export default {
         })
         .catch(e => console.log(e));
     }
+    var status = JSON.parse(localStorage.getItem("user")).type;
+    if (status === "boardchairman") {
+      status = "BoardChairman";
+    } else if (status == "boardmember") {
+      status = "BoardMember";
+    } else if (status == "student") {
+      status = "Student";
+    }
+
+    this.userStatus = status;
   }
 };
 </script>
