@@ -259,27 +259,32 @@ export default {
     }
   },
   created() {
-    axios.get("http://localhost:8000/api/events/oem/").then(response => {
-      response.data.forEach(event => {
-        var parsedEvent = {
-          id: event.id,
-          name: event.name,
-          clubName: event.club.name,
-          description: event.description,
-          location: event.location,
-          start_datetime: this.formatDate(event.start_datetime),
-          end_datetime: this.formatDate(event.end_datetime),
-          status: event.event_status
-        };
-        if (parsedEvent.status === "pending") {
-          this.pendingEvents.push(parsedEvent);
-        } else if (parsedEvent.status === "upcoming") {
-          this.approvedEvents.push(parsedEvent);
-        } else if (parsedEvent.status === "rejected") {
-          this.rejectedEvents.push(parsedEvent);
-        }
+    axios
+      .get("http://localhost:8000/api/events/oem/")
+      .then(response => {
+        response.data.forEach(event => {
+          var parsedEvent = {
+            id: event.id,
+            name: event.name,
+            clubName: event.club.name,
+            description: event.description,
+            location: event.location,
+            start_datetime: this.formatDate(event.start_datetime),
+            end_datetime: this.formatDate(event.end_datetime),
+            status: event.event_status
+          };
+          if (parsedEvent.status === "pending") {
+            this.pendingEvents.push(parsedEvent);
+          } else if (parsedEvent.status === "upcoming") {
+            this.approvedEvents.push(parsedEvent);
+          } else if (parsedEvent.status === "rejected") {
+            this.rejectedEvents.push(parsedEvent);
+          }
+        });
+      })
+      .catch(e => {
+        console.log(e);
       });
-    });
   }
 };
 </script>
