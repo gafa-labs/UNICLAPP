@@ -12,7 +12,7 @@
       <v-tabs color="deep-blue accent-4" v-model="tab">
         <v-tabs-slider color="blue"></v-tabs-slider>
         <v-tab>All</v-tab>
-        <v-tab>Followings</v-tab>
+        <v-tab disabled>Followings</v-tab>
       </v-tabs>
       <v-tabs-items v-model="tab">
         <v-tab-item>
