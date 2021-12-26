@@ -20,7 +20,6 @@ urlpatterns = [
          name="club-boardmembers"),
     path("club/profile/", views.ClubProfileAPIView.as_view(),
          name="club-profile"),
-
-
-
+    path("club/profile/<int:pk>/", views.ClubProfileUpdateAPIView.as_view(),
+         name="club-profile-update"),
 ]
