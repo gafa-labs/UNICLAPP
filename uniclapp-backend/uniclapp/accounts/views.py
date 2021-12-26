@@ -101,7 +101,7 @@ class StudentProfileAPIView(generics.RetrieveAPIView):
 
 
 class PromoteStudentAPIView(generics.CreateAPIView):
-    serializer_class = BasicBoardMemberSerializer
+    serializer_class = BoardMemberSerializer
     queryset = models.BoardMember.objects.all()
 
     def post(self, request):
