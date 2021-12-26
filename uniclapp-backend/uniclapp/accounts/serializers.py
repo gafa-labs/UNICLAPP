@@ -141,7 +141,7 @@ class HESCodeSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
 
-        instance.set_password(validated_data['hes_code'])
+        instance.hes_code = validated_data['hes_code']
         instance.save()
 
         return instance
