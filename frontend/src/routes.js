@@ -32,6 +32,42 @@ const beforeOem = function(to, from, next) {
   }
 };
 
+const checkBoardMember = function(to, from, next) {
+  if (localStorage.getItem("status") == "true") {
+    if (JSON.parse(localStorage.getItem("user")).type == "boardmember") {
+      next();
+    } else {
+      next("/profile");
+    }
+  } else {
+    next("/");
+  }
+};
+
+const checkBoardChairman = function(to, from, next) {
+  if (localStorage.getItem("status") == "true") {
+    if (JSON.parse(localStorage.getItem("user")).type == "boardchairman") {
+      next();
+    } else {
+      next("/profile");
+    }
+  } else {
+    next("/");
+  }
+};
+
+const checkClubAdvisor = function(to, from, next) {
+  if (localStorage.getItem("status") == "true") {
+    if (JSON.parse(localStorage.getItem("user")).type == "clubadvisor") {
+      next();
+    } else {
+      next("/profile");
+    }
+  } else {
+    next("/");
+  }
+};
+
 export const routes = [
   { name: "Login", path: "/", component: Login },
   {
@@ -58,11 +94,31 @@ export const routes = [
   { path: "/eventTracker", component: EventTracker, beforeEnter: before },
   { path: "/campusMap", component: CampusMap, beforeEnter: before },
   { path: "/leaderboard", component: LeaderBoard, beforeEnter: before },
-  { path: "/clubProfile", component: ClubProfile, beforeEnter: before },
-  { path: "/organizeEvent", component: OrganizeEvent, beforeEnter: before },
-  { path: "/eventResult", component: EventResult, beforeEnter: before },
-  { path: "/rankBoardMember", component: RankBoardMember, beforeEnter: before },
-  { path: "/advisorProfile", component: AdvisorProfile, beforeEnter: before },
+  {
+    path: "/clubProfile",
+    component: ClubProfile,
+    beforeEnter: checkBoardMember
+  },
+  {
+    path: "/organizeEvent",
+    component: OrganizeEvent,
+    beforeEnter: checkBoardMember
+  },
+  {
+    path: "/eventResult",
+    component: EventResult,
+    beforeEnter: checkBoardMember
+  },
+  {
+    path: "/rankBoardMember",
+    component: RankBoardMember,
+    beforeEnter: checkBoardChairman
+  },
+  {
+    path: "/advisorProfile",
+    component: AdvisorProfile,
+    beforeEnter: checkClubAdvisor
+  },
   { path: "/oemLogin", component: OemLogin },
   { path: "/oemMain", component: OemMain, beforeEnter: beforeOem }
 ];
