@@ -109,9 +109,9 @@ class PromoteStudentAPIView(generics.CreateAPIView):
         if user:
             student = user.student
             if student:
-                board_chairman = student.board_chairman
-                if board_chairman:
-                    club = board_chairman.club
+                boardmember = student.boardmember
+                if boardmember:
+                    club = boardmember.club
                     data = request.data
                     full_name = data["student_name"]
                     student_id = data["student_id"]

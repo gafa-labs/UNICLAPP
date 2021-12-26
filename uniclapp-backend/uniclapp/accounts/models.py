@@ -92,13 +92,13 @@ class BoardMember(models.Model):
 
 
 class BoardChairman(models.Model):
-    student = models.OneToOneField(
-        Student, on_delete=models.CASCADE, related_name="board_chairman")
+    boardmember = models.OneToOneField(
+        BoardMember, on_delete=models.CASCADE, related_name="board_chairman")
     club = models.OneToOneField(
         "club.Club", on_delete=models.CASCADE, related_name="chairman", null=True, blank=True)
 
     def __str__(self):
-        return self.student.user.full_name
+        return self.boardmember.student.user.full_name
 
 
 class ClubAdvisor(models.Model):

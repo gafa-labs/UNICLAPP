@@ -2,7 +2,6 @@ from django.db import models
 from event import enums
 from django.utils import timezone
 from django.core.validators import MinValueValidator, MaxValueValidator
-from evaluation.models import Evaluation
 
 
 class Event(models.Model):
@@ -23,19 +22,14 @@ class Event(models.Model):
         MinValueValidator(0), MaxValueValidator(5)])
 
     @property
-    def update_status(self):
+    def is_past(self):
         if self.end_datetime > timezone.now():
-            self.event_status = enums.EventStatus.past
-            self.save(update_fields=["event_status"])
+            return True
+        return False
 
     @property
     def number_of_participants(self):
         return len(self.enrolled_students.all())
-
-    def calculate_average_rate(self):
-        average = self.rate / len(self.evaluations)
-        self.rate = average
-        self.save(update_fields=["rate"])
 
     def __str__(self):
         return f'{self.name} - {self.club.name}'
