@@ -7,11 +7,13 @@ from rest_framework import status
 from rest_framework.authtoken.models import Token
 from accounts import models
 from rest_framework.permissions import AllowAny, IsAuthenticated
+from accounts.models import User
 
 
 class StudentRegisterAPIView(generics.CreateAPIView):
     serializer_class = serializers.StudentRegisterSerializer
     permission_classes = (AllowAny,)
+    queryset = User.objects.all()
 
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -113,7 +115,7 @@ class StudentProfileAPIView(generics.RetrieveUpdateAPIView):
             data = serializer.data
             data["name"] = user.full_name
             data["email"] = user.email
-            data["id"] = user.id
+            data["id"] = student.id
             return Response(data)
 
 
