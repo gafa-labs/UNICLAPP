@@ -4,6 +4,8 @@ from rest_framework.response import Response
 from event import serializers
 from event.models import Event, EventEnrollment
 from event import utils
+from club.models import ClubFollowing
+from accounts.serializers import StudentSerializer
 
 
 class EventAPIView(generics.ListAPIView):
@@ -156,18 +158,28 @@ class EventCancelEnrollmentAPIView(generics.RetrieveAPIView):
 
 
 class EventHistoryAPIView(generics.ListAPIView):
-    serializer_class = serializers.EventHistorySerializer
-    queryset = Event.objects.all()
 
     def get(self, request):
         user = request.user
         if user:
             student = user.student
+            results = {}
+            event_information = []
             if student:
-                event_enrollments = student.enrolled_events.all()
-                serializer = self.get_serializer(event_enrollments, many=True)
-                data = serializer.data
-                return Response(serializer.data)
+                event_enrollments = EventEnrollment.objects.filter(
+                    student=student)
+                for enrollment in event_enrollments:
+                    event = enrollment.event
+                    if event.is_past:
+                        event.event_status = "past"
+                        event.save()
+                        rate = enrollment.rate
+                        serializer = serializers.EventSerializer(event)
+                        event_information.append(
+                            {"event": serializer.data, "rate": rate})
+                results["events"] = event_information
+
+                return Response(results)
 
 
 class RateEventAPIView(generics.UpdateAPIView):
