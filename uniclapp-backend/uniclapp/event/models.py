@@ -24,6 +24,9 @@ class Event(models.Model):
     @property
     def is_past(self):
         if self.end_datetime < timezone.now():
+            if self.event_status == "upcoming":
+                self.event_status = "past"
+                self.save(update_fields=["event_status"])
             return True
         return False
 
