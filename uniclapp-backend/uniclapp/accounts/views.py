@@ -143,7 +143,7 @@ class PromoteStudentAPIView(generics.CreateAPIView):
                             candidate_student = models.Student.objects.get(
                                 user=user, student_id=student_id)
                             if student == candidate_student:
-                                if not models.BoardMember.objects.filter(student=student, club=club):
+                                if not models.BoardMember.objects.filter(student=student, club=club).exists():
                                     boardmember = models.BoardMember.objects.create(
                                         student=student, club=club)
 

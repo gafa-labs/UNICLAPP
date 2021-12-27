@@ -23,7 +23,7 @@ class Event(models.Model):
 
     @property
     def is_past(self):
-        if self.end_datetime > timezone.now():
+        if self.end_datetime < timezone.now():
             return True
         return False
 
