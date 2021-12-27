@@ -17,7 +17,7 @@ class EventSerializer(serializers.ModelSerializer):
         model = Event
         fields = ["id", "name", "description", "location", "start_datetime",
                   "end_datetime", "rate", "number_of_participants",
-                  "club", "event_status", "is_online", "ge_status", "ge_point", "zoom_link"]
+                  "club", "event_status", "is_online", "ge_status", "ge_point", "zoom_link", "is_past"]
 
 
 class BasicEventSerializer(serializers.ModelSerializer):
