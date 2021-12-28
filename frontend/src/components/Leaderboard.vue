@@ -82,7 +82,7 @@ export default {
           sortable: false
         },
         {
-          text: "Total Rate",
+          text: "Average Rate",
           sortable: false,
           value: "rate"
         },

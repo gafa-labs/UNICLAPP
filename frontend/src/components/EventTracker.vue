@@ -150,7 +150,7 @@ export default {
             name: event.name,
             start: new Date(event.start_datetime),
             end: new Date(event.end_datetime),
-            timed: false,
+            timed: true,
             color: this.colors[this.rnd(0, this.colors.length - 1)]
           };
           this.allEvents.push(item);

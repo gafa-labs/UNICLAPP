@@ -163,23 +163,21 @@
     <v-dialog v-model="detailDialog" max-width="500">
       <v-card>
         <v-card-title class="text-h5 mb-3">
-          Event Result
+          Event Details
         </v-card-title>
 
         <v-card-text class="pl-9">
-          <v-row class="text-subtitle-1"> Name: {{ showedEvent.name }} </v-row>
           <v-row class="text-subtitle-1">
-            Description: {{ showedEvent.description }}
+            <strong>Name:</strong> {{ showedEvent.name }}
           </v-row>
           <v-row class="text-subtitle-1">
-            Location: {{ showedEvent.location }}
+            <strong>Description:</strong> {{ showedEvent.description }}
           </v-row>
           <v-row class="text-subtitle-1">
-            Date: {{ formatDate(showedEvent) }}
+            <strong>Location:</strong> {{ showedEvent.location }}
           </v-row>
-          <v-row class="text-subtitle-1"> Rate: {{ showedEvent.rate }} </v-row>
           <v-row class="text-subtitle-1">
-            Number of Participants: {{ showedEvent.participants }}
+            <strong>Date:</strong> {{ formatDate(showedEvent) }}
           </v-row>
         </v-card-text>
 

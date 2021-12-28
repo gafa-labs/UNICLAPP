@@ -54,9 +54,8 @@
           </v-col>
           <v-col cols="6">
             <v-btn color="grey lighten-2" elevation="1" fab x-large>
-              <span
-                class="grey--text text--darken-2 display-1 font-weight-bold"
-                >{{ information.psi }}</span
+              <span class="grey--text text--darken-2 display-1 font-weight-bold"
+                >98</span
               >
             </v-btn>
           </v-col>
@@ -82,7 +81,20 @@
               rounded
               color="green lighten-1"
               >Submit</v-btn
-            >
+            ><v-snackbar :color="color" timeout="2000" v-model="snackbar">
+              {{ text }}
+
+              <template v-slot:action="{ attrs }">
+                <v-btn
+                  color="white"
+                  text
+                  v-bind="attrs"
+                  @click="snackbar = false"
+                >
+                  Close
+                </v-btn>
+              </template>
+            </v-snackbar>
           </v-col>
         </v-row>
         <v-text-field
@@ -138,6 +150,9 @@ import axios from "axios";
 export default {
   data() {
     return {
+      color: "",
+      text: "",
+      snackbar: false,
       header: {
         headers: {
           Authorization:
@@ -159,7 +174,6 @@ export default {
   },
   methods: {
     submitHES() {
-      console.log(this.information);
       axios
         .put(
           "http://localhost:8000/api/profiles/student/" +
@@ -169,39 +183,59 @@ export default {
           this.header
         )
         .then(response => {
-          console.log(response);
+          this.color = "green darken-1";
+          this.text = "HES code was updated";
         })
-        .catch(e => console.log(e));
+        .catch(e => {
+          this.color = "red darken-1";
+          this.text = "HES code is not valid";
+        })
+        .finally(f => {
+          this.snackbar = true;
+        });
     },
     changePass() {
-      if (
-        (this.newPassword == "") |
-        (this.confirmPassword == "") |
-        (this.oldPassword == "")
-      ) {
-        alert("FILL ALL THE BLANKS");
-      }
+      // if (
+      //   (this.newPassword == "") |
+      //   (this.confirmPassword == "") |
+      //   (this.oldPassword == "")
+      // ) {
+      //   alert("FILL ALL THE BLANKS");
+      // }
+      var id = JSON.parse(localStorage.getItem("user")).id;
       var info = {
         password: this.newPassword,
         password2: this.confirmPassword,
         old_password: this.oldPassword
       };
-      console.log(
-        "http://localhost:8000/api/change-password/" + this.information.id + "/"
-      );
-      console.log(info);
       axios
         .put(
-          "http://localhost:8000/api/change-password/" +
-            this.information.id +
-            "/",
+          "http://localhost:8000/api/change-password/" + id + "/",
           info,
           this.header
         )
         .then(response => {
-          console.log(response.data);
+          this.color = "green darken-1";
+          this.text = "Password was changed";
+          this.oldPassword = "";
+          this.newPassword = "";
+          this.confirmPassword = "";
         })
-        .catch(e => console.log(e));
+        .catch(e => {
+          console.log(e.response.data);
+          var mes;
+          if (e.response.data.old_password) {
+            mes = e.response.data.old_password.old_password;
+          } else if (e.response.data.password) {
+            mes = e.response.data.password[0];
+          }
+
+          this.color = "red darken-1";
+          this.text = mes;
+        })
+        .finally(f => {
+          this.snackbar = true;
+        });
     }
   },
   created() {
@@ -213,7 +247,6 @@ export default {
       })
       .then(response => {
         this.information = response.data;
-        console.log(this.information);
       })
       .catch(e => console.log(e));
   }

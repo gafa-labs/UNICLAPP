@@ -169,6 +169,7 @@ export default {
       .then(response => {
         response.data.forEach(club => {
           club.status = "following";
+          club.rate = club.rate.toFixed(2);
           this.followingClubs.push(club);
         });
       })

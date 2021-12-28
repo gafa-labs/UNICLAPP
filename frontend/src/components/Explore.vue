@@ -187,6 +187,7 @@ export default {
         } else {
           club.status = "unfollowing";
         }
+        club.rate = club.rate.toFixed(2);
         this.clubs.push(club);
       });
     }

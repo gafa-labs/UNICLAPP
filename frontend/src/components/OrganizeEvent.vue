@@ -102,7 +102,7 @@
             ></v-text-field>
           </template>
           <v-date-picker
-            :min="today"
+            :min="newEvent.startDate"
             v-model="newEvent.endDate"
             @input="picker2 = false"
           ></v-date-picker>
@@ -176,7 +176,20 @@
             color="green lighten-1"
             @click="organizeEvent"
             >Organize</v-btn
-          >
+          ><v-snackbar :color="color" timeout="2000" v-model="snackbar">
+            {{ text }}
+
+            <template v-slot:action="{ attrs }">
+              <v-btn
+                color="white"
+                text
+                v-bind="attrs"
+                @click="snackbar = false"
+              >
+                Close
+              </v-btn>
+            </template>
+          </v-snackbar>
         </v-row>
         <v-row v-if="error" class="red--text mt-6"
           >ALL FIELDS MUST BE FILLED</v-row
@@ -216,6 +229,9 @@ import axios from "axios";
 export default {
   data() {
     return {
+      color: "",
+      text: "",
+      snackbar: false,
       header: {
         headers: {
           Authorization:
@@ -301,10 +317,10 @@ export default {
       if (this.isOnline) {
         this.newEvent.location = "Online";
       }
-      if (Object.values(this.newEvent).includes(null)) {
-        this.error = true;
-        return;
-      }
+      // if (Object.values(this.newEvent).includes(null)) {
+      //   this.error = true;
+      //   //return;
+      // }
       var start_datetime =
         this.newEvent.startDate + "T" + this.newEvent.startTime + ":00+03:00";
       var end_datetime =
@@ -336,8 +352,16 @@ export default {
           this.newEvent = {};
           this.newEvent.date = this.today;
           this.error = false;
+          this.color = "green darken-1";
+          this.text = "Event is created";
         })
-        .catch(e => console.log(e));
+        .catch(e => {
+          this.color = "red darken-1";
+          this.text = "All fields must be filled";
+        })
+        .finally(f => {
+          this.snackbar = true;
+        });
     },
     formattedDate(datetime) {
       var date = new Date(datetime);

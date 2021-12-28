@@ -22,7 +22,7 @@
           </v-col>
           <v-col cols="2">
             <v-row class="text-h4 mt-auto" justify="center">
-              {{ club.rate }}</v-row
+              {{ club.rate.toFixed(2) }}</v-row
             >
             <v-row class="text-subtitle-1 mt-2" justify="center">Rate</v-row>
           </v-col>
@@ -116,7 +116,6 @@ export default {
       };
       var endpoint =
         "http://localhost:8000/api/club/profile/" + this.club.id + "/";
-      console.log(endpoint);
       axios.put(endpoint, newUpdate, this.header);
     }
   },
@@ -135,7 +134,6 @@ export default {
     axios
       .get("http://localhost:8000/api/club/profile/", this.header)
       .then(response => {
-        console.log(response.data[0]);
         this.club.name = response.data[0].club.name;
         this.club.id = response.data[0].club.id;
         this.club.about = response.data[0].club.about;

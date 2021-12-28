@@ -220,6 +220,7 @@ export default {
   },
   methods: {
     logout() {
+      localStorage.setItem("OEMStatus", false);
       this.$router.push("/oemLogin");
     },
     formatDate(item) {

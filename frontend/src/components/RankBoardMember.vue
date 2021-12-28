@@ -35,7 +35,20 @@
         <v-row class="justify-center"
           ><v-btn elevation="2" rounded color="blue lighten-1" @click="promote"
             >Promote</v-btn
-          ></v-row
+          ><v-snackbar :color="color" timeout="2000" v-model="snackbar">
+            {{ text }}
+
+            <template v-slot:action="{ attrs }">
+              <v-btn
+                color="white"
+                text
+                v-bind="attrs"
+                @click="snackbar = false"
+              >
+                Close
+              </v-btn>
+            </template>
+          </v-snackbar></v-row
         >
       </v-col>
       <v-col cols="12" md="8" class="pl-16">
@@ -70,6 +83,9 @@ import axios from "axios";
 export default {
   data() {
     return {
+      color: "",
+      text: "",
+      snackbar: false,
       chairmanId: "",
       header: {
         headers: {
@@ -123,10 +139,16 @@ export default {
         .then(response => {
           object.objectId = response.data;
           this.boardMembers.push(object);
-          this.promotingCandidate = {};
+          this.color = "green darken-1";
+          this.text = "Student has been added to board member";
         })
         .catch(e => {
-          alert("There is no such a student!");
+          var mes = e.response.data.message;
+          this.color = "red darken-1";
+          this.text = mes;
+        })
+        .finally(f => {
+          this.snackbar = true;
           this.promotingCandidate = {};
         });
     },
@@ -154,6 +176,7 @@ export default {
     axios
       .get("http://localhost:8000/api/club/boardmembers/", this.header)
       .then(response => {
+        console.log(response.data);
         response.data.forEach(object => {
           const boardMember = {
             student_name: object.student.user.full_name,

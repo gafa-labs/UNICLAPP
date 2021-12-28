@@ -28,7 +28,7 @@ const beforeOem = function(to, from, next) {
   if (localStorage.getItem("OEMStatus") === "true") {
     next();
   } else {
-    next("/");
+    next("/oemLogin");
   }
 };
 

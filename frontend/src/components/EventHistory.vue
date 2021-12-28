@@ -47,11 +47,11 @@
                     >by {{ event.club }}</v-row
                   >
                   <v-row class="mt-6 text-h6"
-                    >Average Rate: {{ event.avgRate }}</v-row
+                    >Average Rate: {{ event.rate.toFixed(2) }}</v-row
                   >
                   <v-row class="mt-2 text-h6"
                     >Your Rate:
-                    {{ event.isRated ? event.rate : "Not Rated" }}</v-row
+                    {{ event.isRated ? event.studentRate : "Not Rated" }}</v-row
                   >
                 </v-card-text>
                 <v-row style="position: relative;"
@@ -62,7 +62,7 @@
                     clearable
                     hover
                     length="5"
-                    v-model="event.rate"
+                    v-model="event.studentRate"
                   ></v-rating
                 ></v-row>
               </v-card>
@@ -100,11 +100,11 @@
                     >by {{ event.club }}</v-row
                   >
                   <v-row class="mt-6 text-h6"
-                    >Average Rate: {{ event.avgRate }}</v-row
+                    >Average Rate: {{ event.rate.toFixed(2) }}</v-row
                   >
                   <v-row class="mt-2 text-h6"
                     >Your Rate:
-                    {{ event.isRated ? event.rate : "Not Rated" }}</v-row
+                    {{ event.isRated ? event.studentRate : "Not Rated" }}</v-row
                   >
                 </v-card-text>
                 <v-row style="position: relative;"
@@ -115,7 +115,7 @@
                     clearable
                     hover
                     length="5"
-                    v-model="event.rate"
+                    v-model="event.studentRate"
                   ></v-rating
                 ></v-row>
               </v-card>
@@ -190,10 +190,11 @@ export default {
   methods: {
     rated(event) {
       this.$set(event, "isRated", true);
-      var rateJson = { rate: event.rate };
+      console.log(event);
+      var rateJson = { studentRate: event.studentRate };
       axios
         .put(
-          "http://127.0.0.1:8000/api/events/" + event.eventId + "/rate-event/",
+          "http://127.0.0.1:8000/api/events/" + event.id + "/rate-event/",
           rateJson,
           this.header
         )
@@ -213,16 +214,11 @@ export default {
     axios
       .get("http://localhost:8000/api/events/event-history/", this.header)
       .then(response => {
+        console.log(response.data);
         var studentRate = 0;
-        var avgRate = 0;
-        var eventId = 0;
-        response.data.forEach(item => {
+        response.data.events.forEach(item => {
           studentRate = item.rate;
-          avgRate = item.event.rate;
-          eventId = item.id;
           const tmp = JSON.parse(JSON.stringify(item.event));
-          this.$set(tmp, "avgRate", avgRate);
-          this.$set(tmp, "eventId", eventId);
           this.$set(tmp, "studentRate", studentRate);
           this.$set(tmp, "isRated", studentRate != 0);
           this.allClubsEvents.push(tmp);

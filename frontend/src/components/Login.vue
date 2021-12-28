@@ -47,7 +47,24 @@
                       dark
                       rounded
                       >SIGN IN</v-btn
+                    ><v-snackbar
+                      :color="color"
+                      timeout="2000"
+                      v-model="snackbar"
                     >
+                      {{ text }}
+
+                      <template v-slot:action="{ attrs }">
+                        <v-btn
+                          color="white"
+                          text
+                          v-bind="attrs"
+                          @click="snackbar = false"
+                        >
+                          Close
+                        </v-btn>
+                      </template>
+                    </v-snackbar>
                   </div>
                 </v-col>
                 <v-col cols="12" md="4" class="light-blue darken-3">
@@ -185,6 +202,9 @@ import axios from "axios";
 export default {
   data() {
     return {
+      color: "",
+      text: "",
+      snackbar: false,
       information: { email: "", password: "" },
       register: {
         email: "",
@@ -217,9 +237,13 @@ export default {
         })
         .catch(e => {
           if (e.response.status == 400) {
-            alert("Email or password is incorrect. Please try again!");
+            this.color = "red darken-1";
+            this.text = "Email or password is incorrect. Please try again!";
             return;
           }
+        })
+        .finally(f => {
+          this.snackbar = true;
         });
     },
     registerStudent() {
