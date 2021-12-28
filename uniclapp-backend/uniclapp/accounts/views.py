@@ -135,9 +135,9 @@ class PromoteStudentAPIView(generics.CreateAPIView):
                     full_name = data["student_name"]
                     student_id = data["student_id"]
                     email = data["email"]
-                    user = models.User.objects.get(
-                        email=email, full_name=full_name)
-                    if user:
+                    if models.User.objects.filter(email=email, full_name=full_name).exists():
+                        user = models.User.objects.get(
+                            email=email, full_name=full_name)
                         student = user.student
                         if student:
                             candidate_student = models.Student.objects.get(
@@ -149,7 +149,7 @@ class PromoteStudentAPIView(generics.CreateAPIView):
 
                                     return Response(boardmember.id, status=status.HTTP_201_CREATED)
                                 return Response({"message": "This student has already been a club board member or board chairman"}, status=status.HTTP_400_BAD_REQUEST)
-        return Response({"message": "There is no such a student with given information"}, status=status.HTTP_404_NOT_FOUND)
+                    return Response({"message": "There is no such a student with given information"}, status=status.HTTP_404_NOT_FOUND)
 
 
 class DemoteStudentAPIView(generics.DestroyAPIView):
