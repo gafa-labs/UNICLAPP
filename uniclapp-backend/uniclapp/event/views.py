@@ -192,7 +192,8 @@ class RateEventAPIView(generics.UpdateAPIView):
         if user:
             student = user.student
             if student:
-                event_enrollment = EventEnrollment.objects.get(pk=pk)
+                event = Event.objects.get(pk=pk)
+                event_enrollment = EventEnrollment.objects.get(event=event)
                 data = request.data
                 event_enrollment.rate = data["studentRate"]
                 event_enrollment.save()
