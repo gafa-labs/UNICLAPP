@@ -148,8 +148,8 @@ class PromoteStudentAPIView(generics.CreateAPIView):
                                         student=student, club=club)
 
                                     return Response(boardmember.id, status=status.HTTP_201_CREATED)
-                        return Response(status=status.HTTP_400_BAD_REQUEST)
-        return Response(status=status.HTTP_404_NOT_FOUND)
+                                return Response({"message": "This student has already been a club board member or board chairman"}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"message": "There is no such a student with given information"}, status=status.HTTP_404_NOT_FOUND)
 
 
 class DemoteStudentAPIView(generics.DestroyAPIView):
