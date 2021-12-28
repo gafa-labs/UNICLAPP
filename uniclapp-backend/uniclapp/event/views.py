@@ -211,7 +211,7 @@ class EventTrackerAPIView(generics.ListAPIView):
         user = request.user
         if user:
             student = user.student
-            upcoming_events = utils.get_student_enrolled_upcoming_events(
+            upcoming_events = utils.get_student_enrolled_all_events(
                 student.id)
             queryset = Event.objects.filter(id__in=upcoming_events)
             serializer = self.get_serializer(queryset, many=True)

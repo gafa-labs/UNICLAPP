@@ -59,10 +59,11 @@ def get_student_clubs_upcoming_events(student_id):
 def get_student_enrolled_all_events(student_id):
     student = Student.objects.get(id=student_id)
     if student:
-        evaluation_queryset = student.post.evaluations.all()
+        event_enrollments = EventEnrollment.objects.filter(student=student)
         events = []
-        for evaluation in list(evaluation_queryset):
-            events.append(evaluation.event)
+        for enrollment in event_enrollments:
+            event = enrollment.event
+            events.append(event.id)
         return events
 
     return None
